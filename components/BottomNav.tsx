@@ -4,9 +4,9 @@ import { Home, User, Calendar } from "lucide-react"; // 아이콘 라이브러�
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-    { name: "홈", href: "/", icon: Home },
-    { name: "예약", href: "/reservation", icon: Calendar },
-    { name: "내 정보", href: "/profile", icon: User },
+    { name: "홈", href: "/main", icon: Home },
+    { name: "접수하기", href: "/reservation", icon: Calendar },
+    { name: "내 정보", href: "/my", icon: User },
 ];
 
 export default function BottomNav() {
