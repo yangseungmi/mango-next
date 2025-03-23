@@ -1,4 +1,4 @@
-import {useState} from "react";
+"use client";
 
 import * as React from "react"
 import { format } from "date-fns"
@@ -11,6 +11,7 @@ import { Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import {useState} from "react";
 
 export default function Schedule() {
     const [date, setDate] = useState<Date>();
