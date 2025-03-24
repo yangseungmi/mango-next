@@ -17,6 +17,8 @@ export default function Schedule() {
     const [date, setDate] = useState<Date>();
 
     return (
+        <>
+            {date ? format(date, "yyyy-MM-dd") : <span>Pick a date</span>}
         <Popover>
             <PopoverTrigger asChild>
                 <Button
@@ -39,6 +41,7 @@ export default function Schedule() {
                 />
             </PopoverContent>
         </Popover>
+        </>
     );
 }
 
