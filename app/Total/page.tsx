@@ -2,7 +2,10 @@ import {Input} from "postcss";
 
 export default function Total() {
     return (
-     <Input type="email" placeholder="Email" />
+        <>
+            total 페이지
+            <Input type="text" />
+        </>
 );
 }
 
