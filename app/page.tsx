@@ -25,7 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-const App: React.FC = () => {
+const App = () => {
   const [activeTab, setActiveTab] = useState("메인");
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedMachine, setSelectedMachine] = useState<string>('');
@@ -42,7 +42,9 @@ const App: React.FC = () => {
     setImageUploaded(true);
   };
   return (
-      <div className="bg-gray-50 min-h-screen w-[375px] pb-16">
+      <div
+      className="flex flex-col items-center justify-start min-h-screen bg-gray-50 w-[375px] mx-auto relative">
+
         <Tabs defaultValue="메인" value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* 메인 페이지 */}
           <TabsContent value="메인" className="mt-0 pt-16 pb-20">

@@ -3,13 +3,9 @@
 import { useRouter } from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {useState} from "react";
 
 const LoginPage = () => {
-
     const router = useRouter();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
     const handleLogin = (e) => {
         // 디폴트 페이지로 이동
@@ -94,7 +90,6 @@ const LoginPage = () => {
             </div>
         </div>
     );
-
 };
 
 export default LoginPage;
