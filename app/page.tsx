@@ -1,484 +1,463 @@
 'use client'
 
-import React, { useState } from 'react';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent
-} from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
+import React, {useState} from 'react';
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Card, CardContent} from "@/components/ui/card";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Badge} from "@/components/ui/badge";
+import {useRouter} from "next/navigation";
+
 const App = () => {
-  const [activeTab, setActiveTab] = useState("메인");
-  const [selectedDate, setSelectedDate] = useState<string>('');
-  const [selectedMachine, setSelectedMachine] = useState<string>('');
-  const [symptomDescription, setSymptomDescription] = useState<string>('');
-  const [imageUploaded, setImageUploaded] = useState<boolean>(false);
-  const swiperModules = [Pagination, Autoplay];
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
-  const isFormValid = () => {
-    return selectedMachine && symptomDescription && selectedDate && imageUploaded;
-  };
-  const handleImageUpload = () => {
-    setImageUploaded(true);
-  };
-  return (
-      <div
-      className="flex flex-col items-center justify-start min-h-screen bg-gray-50 w-[375px] mx-auto relative">
+    const router = useRouter();
 
-        <Tabs defaultValue="메인" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* 메인 페이지 */}
-          <TabsContent value="메인" className="mt-0 pt-16 pb-20">
-            <div className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
-              <div className="flex items-center">
-                <img
-                    src="https://public.readdy.ai/ai/img_res/f80578e9af04200d1a2b471e95f4d048.jpg"
-                    alt="베이커리 A/S 로고"
-                    className="h-8 w-8 mr-2"
-                />
-                <h1 className="text-xl font-bold text-blue-600">베이커리 A/S 서비스</h1>
-              </div>
-              <button className="cursor-pointer text-gray-600 relative">
-                <i className="fas fa-bell text-xl"></i>
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
-              </button>
-            </div>
-            <div className="px-4 mt-4">
-              <div className="mb-6">
-                <h2 className="text-lg font-medium mb-3">최근 수리한 베이커리</h2>
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="flex flex-col items-center">
-                    <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                      <img
-                          src="https://public.readdy.ai/ai/img_res/1949e6a615fce694e4eff683ccedabfd.jpg"
-                          alt="파리 베이커리"
-                          className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">파리 베이커리</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                      <img
-                          src="https://public.readdy.ai/ai/img_res/b782c98edb509af16987f260c1fbafe5.jpg"
-                          alt="성심당"
-                          className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">성심당</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                      <img
-                          src="https://public.readdy.ai/ai/img_res/3b20a2115eae5ee9147f218634ffcc1c.jpg"
-                          alt="뚜레쥬르"
-                          className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">뚜레쥬르</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                      <img
-                          src="https://public.readdy.ai/ai/img_res/2dbc54990b3b00130957e9b9b4c3514c.jpg"
-                          alt="타르틴"
-                          className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">타르틴</span>
-                  </div>
-                </div>
-              </div>
-              <Card className="mb-6 border-none shadow-md">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-medium">진행 중인 A/S 현황</CardTitle>
-                  <CardDescription>현재 {3}건의 A/S가 진행 중입니다.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                      <span>접수 대기</span>
-                    </div>
-                    <span className="font-medium">1건</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                      <span>처리 중</span>
-                    </div>
-                    <span className="font-medium">2건</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span>완료</span>
-                    </div>
-                    <span className="font-medium">0건</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <h2 className="text-lg font-medium mb-3">최근 접수 내역</h2>
-              <Card className="mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">오븐 온도 조절 불량</h3>
-                      <p className="text-sm text-gray-500 mt-1">접수일: 2025-04-02</p>
-                      <p className="text-sm text-gray-500">방문 예정: 2025-04-05</p>
-                    </div>
-                    <Badge className="bg-yellow-500 hover:bg-yellow-600">접수 대기</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">믹서기 모터 소음</h3>
-                      <p className="text-sm text-gray-500 mt-1">접수일: 2025-04-01</p>
-                      <p className="text-sm text-gray-500">방문 예정: 2025-04-04</p>
-                    </div>
-                    <Badge className="bg-blue-500 hover:bg-blue-600">처리 중</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="mb-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">반죽기 회전 불량</h3>
-                      <p className="text-sm text-gray-500 mt-1">접수일: 2025-03-30</p>
-                      <p className="text-sm text-gray-500">방문 예정: 2025-04-03</p>
-                    </div>
-                    <Badge className="bg-blue-500 hover:bg-blue-600">처리 중</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              <Button
-                  className="w-full py-6 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-lg !rounded-button mb-6"
-                  onClick={() => setActiveTab("접수")}
-              >
-                <i className="fas fa-tools mr-2"></i> 빠른 A/S 접수하기
-              </Button>
-              <h2 className="text-lg font-medium mb-3">베이커리 기계</h2>
-              <div className="grid grid-cols-4 gap-3 mb-6">
-                <div className="flex flex-col items-center">
-                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                    <img
-                        src="https://public.readdy.ai/ai/img_res/9bc6606d46e042a3c3403e7393c9aa09.jpg"
-                        alt="믹서기"
-                        className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">믹서기</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                    <img
-                        src="https://public.readdy.ai/ai/img_res/b11fbbc6207662c1b386a4be27ecbe8f.jpg"
-                        alt="오븐"
-                        className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">오븐</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                    <img
-                        src="https://public.readdy.ai/ai/img_res/e8e58739cdadcf0907a0e1e9871e0fe8.jpg"
-                        alt="반죽기"
-                        className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">반죽기</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-1">
-                    <img
-                        src="https://public.readdy.ai/ai/img_res/62fe2190d6c571af81a1e4612ff277e4.jpg"
-                        alt="제빵기"
-                        className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-center whitespace-nowrap overflow-hidden text-overflow-ellipsis w-full">제빵기</span>
-                </div>
-              </div>
+    const [activeTab, setActiveTab] = useState("home");
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [selectedMachine, setSelectedMachine] = useState<string>('');
+    const [symptomDescription, setSymptomDescription] = useState<string>('');
+    const [imageUploaded, setImageUploaded] = useState<boolean>(false);
 
-              <h2 className="text-lg font-medium mb-3">공지사항 및 이벤트</h2>
-              <div className="rounded-xl overflow-hidden mb-6">
-                <Swiper
-                    modules={swiperModules}
-                    pagination={{ clickable: true }}
-                    autoplay={{ delay: 5000 }}
-                    className="h-[160px] rounded-xl"
-                >
-                  <SwiperSlide>
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDate(e.target.value);
+    };
+
+    const handleImageUpload = () => {
+        setImageUploaded(true);
+    };
+
+    const isFormValid = () => {
+        return selectedMachine && symptomDescription && selectedDate && imageUploaded;
+    };
+
+    const goDetail = () => {
+
+        return router.push("/detail");
+    }
+
+    // 베이커리 제품 데이터
+    const bakeryProducts = [
+        {
+            id: 1,
+            name: "데코르",
+            image: "https://public.readdy.ai/ai/img_res/1949e6a615fce694e4eff683ccedabfd.jpg",
+            description: "서울 종로구 종로2가 6"
+        },
+        {
+            id: 2,
+            name: "성심당",
+            image: "https://public.readdy.ai/ai/img_res/b782c98edb509af16987f260c1fbafe5.jpg",
+            description: "경기 성남시 분당구 삼평동 740"
+        },
+        {
+            id: 3,
+            name: "테라로사",
+            image: "https://public.readdy.ai/ai/img_res/3b20a2115eae5ee9147f218634ffcc1c.jpg",
+            description: "강원 강릉시 구정면 현천길 7"
+        },
+        {
+            id: 4,
+            name: "타르틴",
+            image: "https://public.readdy.ai/ai/img_res/2dbc54990b3b00130957e9b9b4c3514c.jpg",
+            description: "경기 성남시 분당구 삼평동 740"
+        }
+    ];
+
+    // 기계 수리 후기 데이터
+    const repairReviews = [
+        {
+            id: 1,
+            machineName: "데커 컨벡션 오븐 DKO-8B",
+            repairContent: "온도 센서 교체 및 컨트롤러 수리",
+            date: "2025-04-03",
+            rating: 5
+        },
+        {
+            id: 2,
+            machineName: "삼성 스파이럴 믹서 SM-200",
+            repairContent: "모터 교체 및 벨트 조정",
+            date: "2025-04-01",
+            rating: 4
+        },
+        {
+            id: 3,
+            machineName: "LG 상업용 냉장고 LCR-450",
+            repairContent: "냉매 충전 및 압축기 점검",
+            date: "2025-03-28",
+            rating: 5
+        },
+        {
+            id: 4,
+            machineName: "한국 반죽기 KDM-100",
+            repairContent: "기어박스 수리 및 부품 교체",
+            date: "2025-03-25",
+            rating: 4
+        }
+    ];
+
+    return (
+        <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
+            {/* 헤더 */}
+            <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
+                <div className="flex items-center">
                     <img
-                        src="https://public.readdy.ai/ai/img_res/32deb6963440d91bcb450463ccdc0e6c.jpg"
-                        alt="베이커리 기계 수리 이벤트 배너"
-                        className="w-full h-full object-cover"
+                        src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
+                        alt="로고"
+                        className="w-8 h-8 mr-2"
                     />
-                  </SwiperSlide>
-                </Swiper>
-              </div>
-            </div>
-          </TabsContent>
-          {/* 접수 페이지 */}
-          <TabsContent value="접수" className="mt-0 pt-16 pb-20">
-            <div className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4">
-              <h1 className="text-xl font-bold text-center">기계 고장 접수</h1>
-            </div>
-            <div className="px-4 mt-4">
-              <Card className="border-none shadow-md mb-6">
-                <CardContent className="p-5">
-                  <form className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">기계 종류</label>
-                      <Select value={selectedMachine} onValueChange={setSelectedMachine}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="기계 종류를 선택하세요" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="믹서기">믹서기</SelectItem>
-                          <SelectItem value="오븐">오븐</SelectItem>
-                          <SelectItem value="반죽기">반죽기</SelectItem>
-                          <SelectItem value="제빵기">제빵기</SelectItem>
-                          <SelectItem value="발효기">발효기</SelectItem>
-                          <SelectItem value="냉장쇼케이스">냉장쇼케이스</SelectItem>
-                          <SelectItem value="기타">기타</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">고장 증상</label>
-                      <Textarea
-                          placeholder="고장 증상을 자세히 설명해주세요"
-                          className="resize-none h-24"
-                          value={symptomDescription}
-                          onChange={(e) => setSymptomDescription(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">사진 첨부</label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors" onClick={handleImageUpload}>
-                        {imageUploaded ? (
-                            <div className="flex items-center justify-center flex-col">
-                              <i className="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
-                              <p className="text-sm text-gray-600">이미지가 업로드되었습니다</p>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center flex-col">
-                              <i className="fas fa-camera text-gray-400 text-2xl mb-2"></i>
-                              <p className="text-sm text-gray-600">클릭하여 사진을 첨부하세요</p>
-                              <p className="text-xs text-gray-500 mt-1">(최대 3장)</p>
+                    <h1 className="text-lg font-bold">베이커리 기계 수리</h1>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <button className="relative cursor-pointer">
+                        <i className="fas fa-bell text-gray-600"></i>
+                        <span
+                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                    </button>
+                    <Avatar className="cursor-pointer">
+                        <AvatarImage src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
+                        <AvatarFallback>김</AvatarFallback>
+                    </Avatar>
+                </div>
+            </header>
+
+            {/* 메인 콘텐츠 */}
+            <main className="flex-1 pt-[72px] pb-16">
+                <ScrollArea className="h-[calc(100vh-136px)]">
+                    <div className="px-4 py-4">
+                        {activeTab === "home" && (
+                            <>
+                                <div className="mb-6">
+                                    <h2 className="text-xl font-bold mb-2">안녕하세요, 배밍밍 님!</h2>
+                                    <p className="text-gray-600">오늘도 맛있는 빵 만드시느라 고생 많으십니다.</p>
+                                </div>
+
+                                {/* 자주 찾는 서비스 */}
+                                <div className="mb-6">
+                                    <h3 className="text-lg font-bold mb-3">자주 찾는 서비스</h3>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {[
+                                            {
+                                                icon: "https://public.readdy.ai/ai/img_res/282a4747f2df7190efc1f10248a10531.jpg",
+                                                name: "오븐"
+                                            },
+                                            {
+                                                icon: "https://public.readdy.ai/ai/img_res/7fd0f93fd7e8f9fb5dc52a74554bbd59.jpg",
+                                                name: "믹서"
+                                            },
+                                            {
+                                                icon: "https://public.readdy.ai/ai/img_res/7dd4f1348b6f83afa6ab7dfd8ff64cd4.jpg",
+                                                name: "발효기"
+                                            },
+                                            {
+                                                icon: "https://public.readdy.ai/ai/img_res/9ebb56368fb658ea024cae411a9d77bf.jpg",
+                                                name: "반죽기"
+                                            }
+                                        ].map((item, index) => (
+                                            <div key={index} className="flex flex-col items-center cursor-pointer">
+                                                <div
+                                                    className="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center overflow-hidden mb-1">
+                                                    <img src={item.icon} alt={item.name}
+                                                         className="w-12 h-12 object-contain"/>
+                                                </div>
+                                                <span
+                                                    className="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">{item.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* 빠른 수리 접수 버튼 */}
+                                <div className="mb-8">
+                                    <Button
+                                        className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold shadow-lg !rounded-button"
+                                        onClick={() => setActiveTab("repair")}
+                                    >
+                                        <i className="fas fa-tools mr-2"></i>
+                                        수리 접수하기
+                                    </Button>
+                                </div>
+                                {/* 베이커리 사진 그리드 섹션 */}
+                                <div className="mb-8">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-lg font-bold">최근 수리 베이커리</h3>
+                                        <Button variant="ghost"
+                                                className="text-blue-600 text-sm p-0 h-auto cursor-pointer">
+                                            더보기 <i className="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </Button>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {bakeryProducts.map((product) => (
+                                            <div key={product.id}
+                                                 className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                                                <div className="w-full aspect-square overflow-hidden">
+                                                    <img
+                                                        src={product.image}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover object-top"
+                                                    />
+                                                </div>
+                                                <div className="p-3">
+                                                    <h4 className="font-medium text-gray-900">{product.name}</h4>
+                                                    <p className="text-xs text-gray-500 mt-1">{product.description}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* 기계 수리 후기 게시판 섹션 */}
+                                <div className="mb-8">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-lg font-bold">기계 수리 후기</h3>
+                                        <Button variant="ghost"
+                                                className="text-blue-600 text-sm p-0 h-auto cursor-pointer">
+                                            더보기 <i className="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </Button>
+                                    </div>
+
+                                    <Card className="border border-gray-200 shadow-sm">
+                                        <CardContent className="p-0">
+                                            <div className="divide-y divide-gray-200">
+                                                {repairReviews.map((review) => (
+                                                    <div key={review.id}
+                                                         className="p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                                                        <div className="flex justify-between items-start">
+                                                            <div>
+                                                                <h4 className="font-medium text-gray-900">{review.machineName}</h4>
+                                                                <p className="text-sm text-gray-600 mt-1">{review.repairContent}</p>
+                                                                <div className="flex items-center mt-2">
+                                                                    {[...Array(review.rating)].map((_, i) => (
+                                                                        <i key={i}
+                                                                           className="fas fa-star text-yellow-400 text-xs mr-0.5"></i>
+                                                                    ))}
+                                                                    {[...Array(5 - review.rating)].map((_, i) => (
+                                                                        <i key={i}
+                                                                           className="far fa-star text-yellow-400 text-xs mr-0.5"></i>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col items-end">
+                                                                <span
+                                                                    className="text-xs text-gray-500">{review.date}</span>
+                                                                <Badge variant="outline"
+                                                                       className="mt-2 bg-blue-50 text-blue-700 border-blue-200">
+                                                                    완료
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+
+                            </>
+                        )}
+
+                        {activeTab === "repair" && (
+                            <div className="py-2">
+                                <h2 className="text-xl font-bold mb-4">수리 접수하기</h2>
+                                <p className="text-gray-600 mb-6">기계 정보와 고장 내용을 입력해 주세요.</p>
+
+                                {/* 수리 접수 폼 내용 */}
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">기계 종류</label>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"].map((type, index) => (
+                                                <div key={index}
+                                                     className="bg-white border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50">
+                                                    {type}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">모델명</label>
+                                        <Input
+                                            type="text"
+                                            placeholder="예: 데커 컨벡션 오븐 DKO-8B"
+                                            className="w-full border-gray-300"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">사진 첨부</label>
+                                        <div
+                                            className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                            onClick={handleImageUpload}>
+                                            {imageUploaded ? (
+                                                <div className="flex items-center justify-center flex-col">
+                                                    <i className="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                                                    <p className="text-sm text-gray-600">이미지가 업로드되었습니다</p>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-center flex-col">
+                                                    <i className="fas fa-camera text-gray-400 text-2xl mb-2"></i>
+                                                    <p className="text-sm text-gray-600">클릭하여 사진을 첨부하세요</p>
+                                                    <p className="text-xs text-gray-500 mt-1">(최대 3장)</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">희망 방문 일시</label>
+                                        <Input
+                                            type="datetime-local"
+                                            className="w-full"
+                                            value={selectedDate}
+                                            onChange={handleDateChange}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">고장 증상</label>
+                                        <textarea
+                                            placeholder="고장 증상을 자세히 설명해 주세요."
+                                            className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        ></textarea>
+                                    </div>
+
+                                    <Button
+                                        className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
+                                        disabled={!isFormValid()}
+                                    > 접수하기
+                                    </Button>
+                                </div>
                             </div>
                         )}
-                      </div>
+
+                        {activeTab === "history" && (
+                            <div className="py-2">
+                                <h2 className="text-xl font-bold mb-4">접수 내역</h2>
+
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map((item) => (
+                                        <Card key={item} className="border border-gray-200 shadow-sm">
+                                            <CardContent className="p-4">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <h4 className="font-bold">데커 컨벡션 오븐 DKO-8B</h4>
+                                                        <p className="text-sm text-gray-600">접수일: 2025-04-0{item}</p>
+                                                    </div>
+                                                    <Badge variant="outline"
+                                                           className="bg-blue-50 text-blue-700 border-blue-200">
+                                                        진행중
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-sm text-gray-700 mb-3">온도 조절 문제로 인한 수리 접수</p>
+                                                <Button
+                                                    onClick={goDetail}
+                                                    variant="outline" className="w-full text-sm !rounded-button">
+                                                    상세보기
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === "quote" && (
+                            <div className="py-2">
+                                <h2 className="text-xl font-bold mb-4">견적 확인</h2>
+
+                                <Card className="border border-gray-200 shadow-sm mb-4">
+                                    <CardContent className="p-4">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h4 className="font-bold">데커 컨벡션 오븐 DKO-8B</h4>
+                                                <p className="text-sm text-gray-600">접수번호: REP-20250401-001</p>
+                                            </div>
+                                            <Badge variant="outline"
+                                                   className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                                                견적 대기
+                                            </Badge>
+                                        </div>
+
+                                        <div className="bg-gray-50 p-3 rounded-lg mb-3">
+                                            <div className="flex justify-between mb-1">
+                                                <span className="text-sm text-gray-600">최종 견적</span>
+                                                <span className="font-bold">견적 준비중</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-sm text-gray-600">조치 완료일</span>
+                                                <span className="font-bold">확인중</span>
+                                            </div>
+                                        </div>
+
+                                        <Button className="w-full bg-blue-600 text-white !rounded-button">
+                                            결제하기
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        )}
+
+                        {activeTab === "more" && (
+                            <div className="py-2">
+                                <h2 className="text-xl font-bold mb-4">더보기</h2>
+
+                                <div
+                                    className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
+                                    <div className="divide-y divide-gray-200">
+                                        {["내 정보", "알림 설정", "자주 묻는 질문", "고객센터", "이용약관", "로그아웃"].map((item, index) => (
+                                            <div key={index}
+                                                 className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                                                <span>{item}</span>
+                                                <i className="fas fa-chevron-right text-gray-400"></i>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">희망 방문 일시</label>
-                      <Input
-                          type="datetime-local"
-                          className="w-full"
-                          value={selectedDate}
-                          onChange={handleDateChange}
-                      />
-                    </div>
-                    <Button
-                        className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
-                        disabled={!isFormValid()}
-                    >
-                      접수하기
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-              <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                <h3 className="font-medium text-blue-700 mb-2 flex items-center">
-                  <i className="fas fa-info-circle mr-2"></i> 접수 안내
-                </h3>
-                <ul className="text-sm text-blue-700 space-y-2">
-                  <li>• 접수 후 담당자가 확인하여 연락드립니다.</li>
-                  <li>• 정확한 증상 설명과 사진 첨부는 빠른 해결에 도움이 됩니다.</li>
-                  <li>• 희망 방문 일시는 상황에 따라 조정될 수 있습니다.</li>
-                </ul>
-              </div>
+                </ScrollArea>
+            </main>
+
+            {/* 하단 탭 바 */}
+            <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-5 h-16">
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => setActiveTab("home")}
+                >
+                    <i className={`fas fa-home ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">홈</span>
+                </button>
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => setActiveTab("repair")}
+                >
+                    <i className={`fas fa-tools ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">수리 접수</span>
+                </button>
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => setActiveTab("history")}
+                >
+                    <i className={`fas fa-clipboard-list ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">접수 내역</span>
+                </button>
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => setActiveTab("quote")}
+                >
+                    <i className={`fas fa-file-invoice-dollar ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">견적</span>
+                </button>
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => setActiveTab("more")}
+                >
+                    <i className={`fas fa-ellipsis-h ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">더보기</span>
+                </button>
             </div>
-          </TabsContent>
-          {/* 내정보 페이지 */}
-          <TabsContent value="내정보" className="mt-0 pt-16 pb-20">
-            <div className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4">
-              <h1 className="text-xl font-bold text-center">내 정보</h1>
-            </div>
-            <div className="px-4 mt-4">
-              <Card className="border-none shadow-md mb-6">
-                <CardContent className="p-5">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src="https://public.readdy.ai/ai/img_res/b1586fe62598bc3b6e230538708a1c88.jpg" />
-                      <AvatarFallback>김</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h2 className="text-lg font-medium">김민수</h2>
-                      <p className="text-sm text-gray-500">010-1234-5678</p>
-                      <p className="text-sm text-gray-500">minsu.kim@example.com</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full mt-4 cursor-pointer !rounded-button">
-                    <i className="fas fa-user-edit mr-2"></i> 프로필 수정
-                  </Button>
-                </CardContent>
-              </Card>
-              <h2 className="text-lg font-medium mb-3">나의 접수 내역</h2>
-              <div className="flex space-x-2 mb-4 overflow-x-auto py-1">
-                <Badge variant="outline" className="px-3 py-1 cursor-pointer bg-blue-600 text-white">전체</Badge>
-                <Badge variant="outline" className="px-3 py-1 cursor-pointer">접수 대기</Badge>
-                <Badge variant="outline" className="px-3 py-1 cursor-pointer">처리 중</Badge>
-                <Badge variant="outline" className="px-3 py-1 cursor-pointer">완료</Badge>
-              </div>
-              <ScrollArea className="h-[300px] rounded-md">
-                <Card className="mb-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">오븐 온도 조절 불량</h3>
-                        <p className="text-sm text-gray-500 mt-1">접수일: 2025-04-02</p>
-                        <p className="text-sm text-gray-500">방문 예정: 2025-04-05</p>
-                      </div>
-                      <Badge className="bg-yellow-500 hover:bg-yellow-600">접수 대기</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="mb-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">믹서기 모터 소음</h3>
-                        <p className="text-sm text-gray-500 mt-1">접수일: 2025-04-01</p>
-                        <p className="text-sm text-gray-500">방문 예정: 2025-04-04</p>
-                      </div>
-                      <Badge className="bg-blue-500 hover:bg-blue-600">처리 중</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="mb-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">반죽기 회전 불량</h3>
-                        <p className="text-sm text-gray-500 mt-1">접수일: 2025-03-30</p>
-                        <p className="text-sm text-gray-500">방문 예정: 2025-04-03</p>
-                      </div>
-                      <Badge className="bg-blue-500 hover:bg-blue-600">처리 중</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="mb-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">제빵기 타이머 오작동</h3>
-                        <p className="text-sm text-gray-500 mt-1">접수일: 2025-03-20</p>
-                        <p className="text-sm text-gray-500">방문일: 2025-03-25</p>
-                      </div>
-                      <Badge className="bg-green-500 hover:bg-green-600">완료</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="mb-3 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">냉장쇼케이스 온도 이상</h3>
-                        <p className="text-sm text-gray-500 mt-1">접수일: 2025-03-15</p>
-                        <p className="text-sm text-gray-500">방문일: 2025-03-18</p>
-                      </div>
-                      <Badge className="bg-green-500 hover:bg-green-600">완료</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              </ScrollArea>
-              <h2 className="text-lg font-medium mt-6 mb-3">설정</h2>
-              <Card className="border-none shadow-md mb-6">
-                <CardContent className="p-0">
-                  <div className="cursor-pointer hover:bg-gray-50 transition-colors p-4 flex justify-between items-center border-b border-gray-100">
-                    <div className="flex items-center">
-                      <i className="fas fa-bell text-gray-500 w-6"></i>
-                      <span className="ml-3">알림 설정</span>
-                    </div>
-                    <i className="fas fa-chevron-right text-gray-400"></i>
-                  </div>
-                  <div className="cursor-pointer hover:bg-gray-50 transition-colors p-4 flex justify-between items-center border-b border-gray-100">
-                    <div className="flex items-center">
-                      <i className="fas fa-shield-alt text-gray-500 w-6"></i>
-                      <span className="ml-3">개인정보 관리</span>
-                    </div>
-                    <i className="fas fa-chevron-right text-gray-400"></i>
-                  </div>
-                  <div className="cursor-pointer hover:bg-gray-50 transition-colors p-4 flex justify-between items-center border-b border-gray-100">
-                    <div className="flex items-center">
-                      <i className="fas fa-headset text-gray-500 w-6"></i>
-                      <span className="ml-3">고객센터</span>
-                    </div>
-                    <i className="fas fa-chevron-right text-gray-400"></i>
-                  </div>
-                  <div className="cursor-pointer hover:bg-gray-50 transition-colors p-4 flex justify-between items-center">
-                    <div className="flex items-center">
-                      <i className="fas fa-sign-out-alt text-gray-500 w-6"></i>
-                      <span className="ml-3">로그아웃</span>
-                    </div>
-                    <i className="fas fa-chevron-right text-gray-400"></i>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-          {/* 탭 네비게이션 바 */}
-          <TabsList className="fixed bottom-0 w-[375px] grid grid-cols-3 bg-white border-t border-gray-200 h-16 shadow-md z-10">
-            <TabsTrigger
-                value="메인"
-                className="flex flex-col items-center justify-center data-[state=active]:text-blue-600 cursor-pointer"
-            >
-              <i className="fas fa-home text-lg"></i>
-              <span className="text-xs mt-1">메인</span>
-            </TabsTrigger>
-            <TabsTrigger
-                value="접수"
-                className="flex flex-col items-center justify-center data-[state=active]:text-blue-600 cursor-pointer"
-            >
-              <i className="fas fa-tools text-lg"></i>
-              <span className="text-xs mt-1">접수</span>
-            </TabsTrigger>
-            <TabsTrigger
-                value="내정보"
-                className="flex flex-col items-center justify-center data-[state=active]:text-blue-600 cursor-pointer"
-            >
-              <i className="fas fa-user text-lg"></i>
-              <span className="text-xs mt-1">내정보</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-  );
+        </div>
+    );
 };
-export default App
+
+export default App;
+
