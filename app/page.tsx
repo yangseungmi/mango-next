@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Card, CardContent} from "@/components/ui/card";
@@ -8,32 +8,71 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
+import {loadPostcodeScript} from "@/util/loadPostcodeScript";
 
 const App = () => {
     const router = useRouter();
 
+    const [address, setAddress] = useState('');
+    const [detailAddress, setDetailAddress] = useState('');
     const [activeTab, setActiveTab] = useState("home");
     const [selectedDate, setSelectedDate] = useState<string>('');
-    const [selectedMachine, setSelectedMachine] = useState<string>('');
     const [symptomDescription, setSymptomDescription] = useState<string>('');
     const [imageUploaded, setImageUploaded] = useState<boolean>(false);
+    const [selectedMachines, setSelectedMachines] = useState<string[]>([]);
+    const [isSelectedAddress, setIsSelectedAddress] = useState<boolean>(false);
+
+    const toggleMachine = (type: string) => {
+        setSelectedMachines((prev) =>
+            prev.includes(type)
+                ? prev.filter((item) => item !== type) // 선택 해제
+                : [...prev, type] // 선택 추가
+        );
+    };
+
+    useEffect(() => {
+        const now = new Date();
+        now.setHours(now.getHours() + 9);
+        const formatted = now.toISOString().slice(0, 16);
+        setSelectedDate(formatted);
+    }, []);
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedDate(e.target.value);
+    };
+
+    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setSymptomDescription(e.target.value);
     };
 
     const handleImageUpload = () => {
         setImageUploaded(true);
     };
 
+    const handleDetailAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDetailAddress(e.target.value);
+    };
+    const handleSearchAddress = async () => {
+        await loadPostcodeScript();
+
+        new (window as any).daum.Postcode({
+            oncomplete: function (data: any) {
+                const fullAddress = data.address;
+                setAddress(fullAddress);
+                setIsSelectedAddress(true);
+            },
+        }).open();
+    };
+
     const isFormValid = () => {
-        return selectedMachine && symptomDescription && selectedDate && imageUploaded;
+        return selectedMachines.length > 0 && symptomDescription && selectedDate && imageUploaded;
     };
 
     const goDetail = () => {
-
         return router.push("/detail");
     }
+
+    const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
 
     // 베이커리 제품 데이터
     const bakeryProducts = [
@@ -266,12 +305,18 @@ const App = () => {
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">기계 종류</label>
                                         <div className="grid grid-cols-3 gap-3">
-                                            {["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"].map((type, index) => (
-                                                <div key={index}
-                                                     className="bg-white border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50">
-                                                    {type}
-                                                </div>
-                                            ))}
+                                            {machineList.map((type, index) => {
+                                                const isSelected = selectedMachines.includes(type);
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        onClick={() => toggleMachine(type)}
+                                                        className={`border rounded-lg p-3 text-center cursor-pointer transition ${isSelected ? 'bg-blue-100 border-blue-500 font-semibold' : 'bg-white border-gray-200 hover:border-blue-500 hover:bg-blue-50'}           `}>
+                                                        {type}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -312,10 +357,31 @@ const App = () => {
                                         />
                                     </div>
                                     <div>
+                                        <label className="block text-sm font-medium mb-2">방문 장소</label>
+                                        <Input
+                                            type="text"
+                                            value={address}
+                                            readOnly
+                                            className="w-full border-gray-300"
+                                            placeholder="주소를 검색해주세요"
+                                            onClick={handleSearchAddress}
+                                        />
+                                        {isSelectedAddress &&
+                                            <Input
+                                                type="text"
+                                                value={detailAddress}
+                                                className="w-full border-gray-300 mt-1"
+                                                placeholder="상세 주소를 입력해주세요"
+                                                onChange={handleDetailAddress}
+                                            />
+                                        }
+                                    </div>
+                                    <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">고장 증상</label>
                                         <textarea
                                             placeholder="고장 증상을 자세히 설명해 주세요."
                                             className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            onChange={handleDescriptionChange}
                                         ></textarea>
                                     </div>
 
