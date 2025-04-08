@@ -73,6 +73,7 @@ const App = () => {
     }
 
     const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
+    const buildingList = ["상가", "아파트", "주택", "", "냉장고", "기타"];
 
     // 베이커리 제품 데이터
     const bakeryProducts = [
@@ -324,7 +325,7 @@ const App = () => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">모델명</label>
                                         <Input
                                             type="text"
-                                            placeholder="예: 데커 컨벡션 오븐 DKO-8B"
+                                            placeholder="데커 컨벡션 오븐 DKO-8B"
                                             className="w-full border-gray-300"
                                         />
                                     </div>
@@ -354,6 +355,14 @@ const App = () => {
                                             className="w-full"
                                             value={selectedDate}
                                             onChange={handleDateChange}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">담당자 연락처</label>
+                                        <Input
+                                            type="text"
+                                            placeholder="01012345678"
+                                            className="w-full border-gray-300"
                                         />
                                     </div>
                                     <div>
