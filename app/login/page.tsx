@@ -1,8 +1,11 @@
 'use client'
 
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import {GoogleLogin} from "@react-oauth/google";
+import {jwtDecode} from "jwt-decode";
+
 
 const LoginPage = () => {
     const router = useRouter();
@@ -69,22 +72,29 @@ const LoginPage = () => {
                         <div className="flex-grow h-px bg-gray-300"></div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
-                        <Button variant="outline"
-                                className="h-12 flex items-center justify-center bg-yellow-400 border-none text-black hover:bg-yellow-500 !rounded-button">
-                            <i className="fas fa-comment text-lg mr-2"></i>
-                            카카오
-                        </Button>
-                        <Button variant="outline"
-                                className="h-12 flex items-center justify-center bg-green-500 border-none text-white hover:bg-green-600 !rounded-button">
-                            <i className="fas fa-n text-lg mr-2"></i>
-                            네이버
-                        </Button>
-                        <Button variant="outline"
-                                className="h-12 flex items-center justify-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 !rounded-button">
-                            <i className="fab fa-google text-lg mr-2 text-red-500"></i>
-                            구글
-                        </Button>
+                    {/*<div className="grid grid-cols-3 gap-3">*/}
+                    {/*    <Button variant="outline"*/}
+                    {/*            className="h-12 flex items-center justify-center bg-yellow-400 border-none text-black hover:bg-yellow-500 !rounded-button">*/}
+                    {/*        <i className="fas fa-comment text-lg mr-2"></i>*/}
+                    {/*        카카오*/}
+                    {/*    </Button>*/}
+                    {/*    <Button variant="outline"*/}
+                    {/*            className="h-12 flex items-center justify-center bg-green-500 border-none text-white hover:bg-green-600 !rounded-button">*/}
+                    {/*        <i className="fas fa-n text-lg mr-2"></i>*/}
+                    {/*        네이버*/}
+                    {/*    </Button>*/}
+                    {/*</div>*/}
+                    <div>
+                        <GoogleLogin
+                            onSuccess={(credentialResponse) => {
+                                const decoded = jwtDecode(credentialResponse.credential!);
+                                console.log('✅ 로그인 성공:', decoded);
+                                router.push("/");
+                            }}
+                            onError={() => {
+                                console.log('❌ 로그인 실패')
+                            }}
+                        />
                     </div>
                 </div>
             </div>

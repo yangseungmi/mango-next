@@ -74,6 +74,7 @@ const App = () => {
 
     const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
     const buildingList = ["상가", "아파트", "주택", "", "냉장고", "기타"];
+    const moreList = ["내 정보", "알림 설정", "자주 묻는 질문", "고객센터", "이용약관", "로그아웃"];
 
     // 베이커리 제품 데이터
     const bakeryProducts = [
@@ -473,11 +474,10 @@ const App = () => {
                         {activeTab === "more" && (
                             <div className="py-2">
                                 <h2 className="text-xl font-bold mb-4">더보기</h2>
-
                                 <div
                                     className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
                                     <div className="divide-y divide-gray-200">
-                                        {["내 정보", "알림 설정", "자주 묻는 질문", "고객센터", "이용약관", "로그아웃"].map((item, index) => (
+                                        {moreList.map((item, index) => (
                                             <div key={index}
                                                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
                                                 <span>{item}</span>
