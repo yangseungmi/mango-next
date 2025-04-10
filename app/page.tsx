@@ -9,6 +9,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
 import {loadPostcodeScript} from "@/util/loadPostcodeScript";
+import Link from "next/link";
 
 const App = () => {
     const router = useRouter();
@@ -21,6 +22,30 @@ const App = () => {
     const [imageUploaded, setImageUploaded] = useState<boolean>(false);
     const [selectedMachines, setSelectedMachines] = useState<string[]>([]);
     const [isSelectedAddress, setIsSelectedAddress] = useState<boolean>(false);
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleDialogOpen = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+    };
+
+    const handleDialogConfirm = () => {
+        // 이동 동작 예시
+        console.log('이동');
+    };
+    const changeTab = (tab: string) =>{
+        if(!isFormValid()){
+            // 이동 못해
+            handleDialogOpen();
+        }
+        else {
+            setActiveTab(tab);
+        }
+    }
 
     const toggleMachine = (type: string) => {
         setSelectedMachines((prev) =>
@@ -74,8 +99,14 @@ const App = () => {
 
     const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
     const buildingList = ["상가", "아파트", "주택", "", "냉장고", "기타"];
-    const moreList = ["내 정보", "알림 설정", "자주 묻는 질문", "고객센터", "이용약관", "로그아웃"];
-
+    const moreList = [
+        {text: '내 정보', link: '/profile'},
+        {text: '알림 설정', link: '/notifications'},
+        {text: '자주 묻는 질문', link: '/faq'},
+        {text: '고객센터', link: '/support'},
+        {text: '이용약관', link: '/terms'},
+        {text: '로그아웃', link: ''} // 로그아웃은 따로 처리
+    ];
     // 베이커리 제품 데이터
     const bakeryProducts = [
         {
@@ -136,6 +167,13 @@ const App = () => {
         }
     ];
 
+    const handleLogout = () => {
+        // 1. 토큰 삭제 (쿠키 or localStorage 기반)
+        // deleteCookie('accessToken') // 또는 localStorage.removeItem('accessToken') 등
+
+        // 2. 리다이렉트
+        router.push('/login')
+    }
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
@@ -478,11 +516,23 @@ const App = () => {
                                     className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
                                     <div className="divide-y divide-gray-200">
                                         {moreList.map((item, index) => (
-                                            <div key={index}
-                                                 className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
-                                                <span>{item}</span>
-                                                <i className="fas fa-chevron-right text-gray-400"></i>
-                                            </div>
+                                            item.link ? (
+                                                <Link href={item.link} key={index}>
+                                                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                                                        <span>{item.text}</span>
+                                                        <i className="fas fa-chevron-right text-gray-400"></i>
+                                                    </div>
+                                                </Link>
+                                            ) : (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                                                    onClick={() => handleLogout()}
+                                                >
+                                                    <span>{item.text}</span>
+                                                    <i className="fas fa-chevron-right text-gray-400"></i>
+                                                </div>
+                                            )
                                         ))}
                                     </div>
                                 </div>
@@ -496,7 +546,7 @@ const App = () => {
             <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-5 h-16">
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={() => setActiveTab("home")}
+                    onClick={() => changeTab("home")}
                 >
                     <i className={`fas fa-home ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">홈</span>
