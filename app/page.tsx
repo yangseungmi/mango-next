@@ -10,6 +10,7 @@ import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
 import {loadPostcodeScript} from "@/util/loadPostcodeScript";
 import Link from "next/link";
+import DialogPopup from "@/components/dialog";
 
 const App = () => {
     const router = useRouter();
@@ -539,6 +540,7 @@ const App = () => {
                             </div>
                         )}
                     </div>
+                    <DialogPopup isOpen={isDialogOpen} onClose={handleDialogClose}/>
                 </ScrollArea>
             </main>
 
