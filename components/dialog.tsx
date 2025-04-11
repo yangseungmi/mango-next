@@ -1,26 +1,43 @@
 import React from 'react';
-import {Dialog, DialogClose, DialogContent} from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
 
-const DialogPopup = ({ isOpen, onClose, onConfirm }) => {
+const DialogPopup = ({isOpen, onClose, onConfirm}) => {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
-                <div>
-                    <p>이 페이지를 벗어나시겠습니까?</p>
-                    <div>
-                        <button
+                <DialogHeader>
+                    <DialogTitle>이 페이지를 벗어나시겠습니까?</DialogTitle>
+                    <DialogDescription>
+                        이동하시면 작성한 내용은 초기화됩니다.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button
+                            type="button"
+                            variant="outline"
                             onClick={() => {
                                 onConfirm();
                                 onClose();
-                            }}
-                        >
+                            }}>
                             이동
-                        </button>
-                        <DialogClose asChild>
-                            <button onClick={onClose}>취소</button>
-                        </DialogClose>
-                    </div>
-                </div>
+                        </Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                        <Button type="button" variant="secondary">
+                            취소
+                        </Button>
+                    </DialogClose>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

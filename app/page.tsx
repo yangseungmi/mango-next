@@ -25,6 +25,7 @@ const App = () => {
     const [isSelectedAddress, setIsSelectedAddress] = useState<boolean>(false);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [pendingTab, setPendingTab] = useState<string>('');
 
     const handleDialogOpen = () => {
         setIsDialogOpen(true);
@@ -35,13 +36,14 @@ const App = () => {
     };
 
     const handleDialogConfirm = () => {
-        // 이동 동작 예시
-        console.log('이동');
+        setActiveTab(pendingTab);
+        handleDialogClose();
     };
-    const changeTab = (tab: string) =>{
-        if(!isFormValid()){
-            // 이동 못해
+
+    const changeTab = (tab: string) => {
+        if(activeTab == 'repair' && tab != 'repair'){
             handleDialogOpen();
+            setPendingTab(tab);
         }
         else {
             setActiveTab(tab);
@@ -519,7 +521,8 @@ const App = () => {
                                         {moreList.map((item, index) => (
                                             item.link ? (
                                                 <Link href={item.link} key={index}>
-                                                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                                                    <div
+                                                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
                                                         <span>{item.text}</span>
                                                         <i className="fas fa-chevron-right text-gray-400"></i>
                                                     </div>
@@ -540,7 +543,8 @@ const App = () => {
                             </div>
                         )}
                     </div>
-                    <DialogPopup isOpen={isDialogOpen} onClose={handleDialogClose}/>
+                    <DialogPopup isOpen={isDialogOpen} onClose={handleDialogClose}
+                                 onConfirm={() => handleDialogConfirm()}/>
                 </ScrollArea>
             </main>
 
@@ -562,21 +566,21 @@ const App = () => {
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={() => setActiveTab("history")}
+                    onClick={() => changeTab("history")}
                 >
                     <i className={`fas fa-clipboard-list ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">접수 내역</span>
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={() => setActiveTab("quote")}
+                    onClick={() => changeTab("quote")}
                 >
                     <i className={`fas fa-file-invoice-dollar ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">견적</span>
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={() => setActiveTab("more")}
+                    onClick={() => changeTab("more")}
                 >
                     <i className={`fas fa-ellipsis-h ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">더보기</span>
