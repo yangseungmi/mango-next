@@ -110,6 +110,12 @@ const App = () => {
         {text: '이용약관', link: '/terms'},
         {text: '로그아웃', link: ''} // 로그아웃은 따로 처리
     ];
+    const orderList = [{
+        machineName:'데커 컨벡션 오븐 DKO-8B',
+        orderDate:'2025-04-01',
+        orderStatus:'진행중',
+        orderReason:'온도 조절 문제로 인한 수리 접수'
+    }];
     // 베이커리 제품 데이터
     const bakeryProducts = [
         {
@@ -450,7 +456,7 @@ const App = () => {
                                 <h2 className="text-xl font-bold mb-4">접수 내역</h2>
 
                                 <div className="space-y-4">
-                                    {[1, 2, 3].map((item) => (
+                                    {orderList.map((item) => (
                                         <Card key={item} className="border border-gray-200 shadow-sm">
                                             <CardContent className="p-4">
                                                 <div className="flex justify-between items-start mb-2">
