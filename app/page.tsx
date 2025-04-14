@@ -456,20 +456,20 @@ const App = () => {
                                 <h2 className="text-xl font-bold mb-4">접수 내역</h2>
 
                                 <div className="space-y-4">
-                                    {orderList.map((item) => (
-                                        <Card key={item} className="border border-gray-200 shadow-sm">
+                                    {orderList.map((item, index) => (
+                                        <Card key={index} className="border border-gray-200 shadow-sm">
                                             <CardContent className="p-4">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div>
-                                                        <h4 className="font-bold">데커 컨벡션 오븐 DKO-8B</h4>
-                                                        <p className="text-sm text-gray-600">접수일: 2025-04-0{item}</p>
+                                                        <h4 className="font-bold">{item.machineName}</h4>
+                                                        <p className="text-sm text-gray-600">접수일: {item.orderDate}</p>
                                                     </div>
                                                     <Badge variant="outline"
                                                            className="bg-blue-50 text-blue-700 border-blue-200">
-                                                        진행중
+                                                        {item.orderStatus}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-sm text-gray-700 mb-3">온도 조절 문제로 인한 수리 접수</p>
+                                                <p className="text-sm text-gray-700 mb-3">{item.orderReason}</p>
                                                 <Button
                                                     onClick={goDetail}
                                                     variant="outline" className="w-full text-sm !rounded-button">
