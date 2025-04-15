@@ -177,6 +177,7 @@ const App = () => {
     ];
 
     const handleLogout = () => {
+        //7?ee.9ZpUBkd*NE
         // 1. 토큰 삭제 (쿠키 or localStorage 기반)
         // deleteCookie('accessToken') // 또는 localStorage.removeItem('accessToken') 등
 
