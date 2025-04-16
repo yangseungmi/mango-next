@@ -184,6 +184,23 @@ const App = () => {
         // 2. 리다이렉트
         router.push('/login')
     }
+
+    const submitOrder = () => {
+        // 접수하기 버튼
+        /*
+        const machineType = ["오븐", "믹서"]; // 또는 위처럼 객체 형태도 가능
+
+        const { data, error } = await supabase
+          .from('repair_requests')
+          .insert({
+            machine_type: machineType, // json 필드
+            // 나머지 필드도 함께
+          });
+
+          -> supabase 도입 예정
+         */
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
@@ -446,6 +463,7 @@ const App = () => {
                                     <Button
                                         className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
                                         disabled={!isFormValid()}
+                                        onClick={submitOrder}
                                     > 접수하기
                                     </Button>
                                 </div>
