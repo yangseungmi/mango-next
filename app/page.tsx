@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Card, CardContent} from "@/components/ui/card";
@@ -15,18 +15,43 @@ import DialogPopup from "@/components/dialog";
 const App = () => {
     const router = useRouter();
 
+    const [images, setImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const [address, setAddress] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
     const [activeTab, setActiveTab] = useState("home");
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [symptomDescription, setSymptomDescription] = useState<string>('');
-    const [imageUploaded, setImageUploaded] = useState<boolean>(false);
     const [selectedMachines, setSelectedMachines] = useState<string[]>([]);
     const [isSelectedAddress, setIsSelectedAddress] = useState<boolean>(false);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [pendingTab, setPendingTab] = useState<string>('');
 
+    const removeImage = (index: number) => {
+        setImages(prev => prev.filter((_, i) => i !== index));
+    };
+    const handleImageUpload = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current!.click(); // 숨겨진 input을 클릭
+        }
+    };
+    const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('handleFilesChange',event.target.files);
+        const selectedFiles = event.target.files;
+        if (!selectedFiles) return;
+
+        const fileArray = Array.from(selectedFiles);
+
+        // 최대 3장까지만 업로드 허용
+        if (images.length + fileArray.length > 3) {
+            alert('최대 3장의 이미지만 업로드할 수 있습니다.');
+            return;
+        }
+
+        setImages(prev => [...prev, ...fileArray]);
+    };
     const handleDialogOpen = () => {
         setIsDialogOpen(true);
     };
@@ -73,10 +98,6 @@ const App = () => {
         setSymptomDescription(e.target.value);
     };
 
-    const handleImageUpload = () => {
-        setImageUploaded(true);
-    };
-
     const handleDetailAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDetailAddress(e.target.value);
     };
@@ -93,7 +114,7 @@ const App = () => {
     };
 
     const isFormValid = () => {
-        return selectedMachines.length > 0 && symptomDescription && selectedDate && imageUploaded;
+        return selectedMachines.length > 0 && symptomDescription && selectedDate;
     };
 
     const goDetail = () => {
@@ -188,13 +209,16 @@ const App = () => {
     const submitOrder = () => {
         // 접수하기 버튼
         /*
-        const machineType = ["오븐", "믹서"]; // 또는 위처럼 객체 형태도 가능
-
         const { data, error } = await supabase
           .from('repair_requests')
           .insert({
-            machine_type: machineType, // json 필드
-            // 나머지 필드도 함께
+            machine_type: selectedMachines, // json 필드
+            model_name : '',
+            photos : '',
+            visit_dt : selectedDate,
+            phone : '',
+            address : address + '' + detailAddress,
+            description : symptomDescription,
           });
 
           -> supabase 도입 예정
@@ -396,24 +420,60 @@ const App = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-2">사진 첨부</label>
+                                        <label className="block text-sm font-medium mb-2">사진 첨부(선택)</label>
                                         <div
                                             className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
-                                            onClick={handleImageUpload}>
-                                            {imageUploaded ? (
-                                                <div className="flex items-center justify-center flex-col">
-                                                    <i className="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                                            onClick={handleImageUpload}
+                                        >
+                                            {images.length > 0 ? (
+                                                <div className="flex flex-col items-center">
+                                                    <i className="fas fa-check-circle text-green-500 text-2xl mb-2"/>
                                                     <p className="text-sm text-gray-600">이미지가 업로드되었습니다</p>
+                                                    <div className="flex flex-wrap gap-3 mt-4">
+                                                        {images.map((file, index) => (
+                                                            <div key={index} className="relative w-20 h-20">
+                                                                {/* X 아이콘 */}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                                                        removeImage(index);
+                                                                    }}
+                                                                    className="absolute -top-2 -right-2 bg-white rounded-full border border-gray-300 shadow text-xs w-5 h-5 flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+                                                                >
+                                                                    ×
+                                                                </button>
+
+                                                                {/* 이미지 미리보기 */}
+                                                                <img
+                                                                    src={URL.createObjectURL(file)}
+                                                                    alt={`업로드된 이미지 ${index + 1}`}
+                                                                    className="w-full h-full object-cover rounded-lg border"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-center flex-col">
-                                                    <i className="fas fa-camera text-gray-400 text-2xl mb-2"></i>
+                                                    <i className="fas fa-camera text-gray-400 text-2xl mb-2"/>
                                                     <p className="text-sm text-gray-600">클릭하여 사진을 첨부하세요</p>
                                                     <p className="text-xs text-gray-500 mt-1">(최대 3장)</p>
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* 숨겨진 파일 선택 input */}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            hidden
+                                            ref={fileInputRef}
+                                            onChange={handleFilesChange}
+                                        />
                                     </div>
+
                                     <div>
                                         <label className="block text-sm font-medium mb-2">희망 방문 일시</label>
                                         <Input
