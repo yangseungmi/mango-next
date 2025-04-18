@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 
-const DialogPopup = ({isOpen, onClose, onConfirm}) => {
+const DialogPopup = ({isOpen, onClose, onSaveAndMove, onMove}) => {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
@@ -26,10 +26,21 @@ const DialogPopup = ({isOpen, onClose, onConfirm}) => {
                             type="button"
                             variant="outline"
                             onClick={() => {
-                                onConfirm();
+                                onMove();
                                 onClose();
                             }}>
                             이동
+                        </Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                                onSaveAndMove();
+                                onClose();
+                            }}>
+                            저장 후 이동
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useReducer, useRef, useState} from 'react';
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Card, CardContent} from "@/components/ui/card";
@@ -13,17 +13,67 @@ import Link from "next/link";
 import DialogPopup from "@/components/dialog";
 
 const App = () => {
-    const router = useRouter();
+    type State = typeof initialState;
 
+    type Action =
+        | { type: 'SET_ADDRESS'; payload: string }
+        | { type: 'SET_DETAIL_ADDRESS'; payload: string }
+        | { type: 'SET_ACTIVE_TAB'; payload: string }
+        | { type: 'SET_MODEL_NAME'; payload: string }
+        | { type: 'SET_PHONE_NUMBER'; payload: string }
+        | { type: 'SET_SELECTED_DATE'; payload: string }
+        | { type: 'SET_SYMPTOM_DESCRIPTION'; payload: string }
+        | { type: 'TOGGLE_MACHINE'; payload: string }
+        | { type: 'SET_SELECTED_MACHINES'; payload: string[] }
+        | { type: 'RESET' };
+
+    const reducer = (state: State, action: Action): State => {
+        switch (action.type) {
+            case 'SET_ADDRESS':
+                return {...state, address: action.payload};
+            case 'SET_DETAIL_ADDRESS':
+                return {...state, detailAddress: action.payload};
+            case 'SET_MODEL_NAME':
+                return {...state, modelName: action.payload};
+            case 'SET_PHONE_NUMBER':
+                return {...state, phoneNumber: action.payload};
+            case 'SET_SELECTED_DATE':
+                return {...state, selectedDate: action.payload};
+            case 'SET_SYMPTOM_DESCRIPTION':
+                return {...state, symptomDescription: action.payload};
+            case 'TOGGLE_MACHINE':
+                return {
+                    ...state,
+                    selectedMachines: state.selectedMachines.includes(action.payload)
+                        ? state.selectedMachines.filter((item) => item !== action.payload)
+                        : [...state.selectedMachines, action.payload],
+                };
+            case 'SET_SELECTED_MACHINES':
+                return {...state, selectedMachines: action.payload};
+            case 'RESET':
+                return initialState;
+            default:
+                return state;
+        }
+    };
+
+    const initialState = {
+        address: '',
+        detailAddress: '',
+        modelName: '',
+        phoneNumber: '',
+        selectedDate: '',
+        symptomDescription: '',
+        selectedMachines: [] as string[],
+    };
+
+    const router = useRouter();
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    const [activeTab, setActiveTab] = useState("home");
     const [images, setImages] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const [address, setAddress] = useState('');
-    const [detailAddress, setDetailAddress] = useState('');
-    const [activeTab, setActiveTab] = useState("home");
-    const [selectedDate, setSelectedDate] = useState<string>('');
-    const [symptomDescription, setSymptomDescription] = useState<string>('');
-    const [selectedMachines, setSelectedMachines] = useState<string[]>([]);
     const [isSelectedAddress, setIsSelectedAddress] = useState<boolean>(false);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -34,11 +84,11 @@ const App = () => {
     };
     const handleImageUpload = () => {
         if (fileInputRef.current) {
-            fileInputRef.current!.click(); // 숨겨진 input을 클릭
+            fileInputRef.current!.click();
         }
     };
     const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('handleFilesChange',event.target.files);
+        console.log('handleFilesChange', event.target.files);
         const selectedFiles = event.target.files;
         if (!selectedFiles) return;
 
@@ -60,46 +110,38 @@ const App = () => {
         setIsDialogOpen(false);
     };
 
-    const handleDialogConfirm = () => {
+    const handleDialogConfirm = (init: boolean) => {
+        if (init) dispatch({type: 'RESET'});
         setActiveTab(pendingTab);
         handleDialogClose();
     };
 
     const changeTab = (tab: string) => {
-        if(activeTab == 'repair' && tab != 'repair'){
+        if (activeTab == 'repair' && tab != 'repair') {
             handleDialogOpen();
             setPendingTab(tab);
-        }
-        else {
+        } else {
             setActiveTab(tab);
         }
     }
 
     const toggleMachine = (type: string) => {
-        setSelectedMachines((prev) =>
-            prev.includes(type)
-                ? prev.filter((item) => item !== type) // 선택 해제
-                : [...prev, type] // 선택 추가
-        );
+        dispatch({type: 'TOGGLE_MACHINE', payload: type});
     };
 
     useEffect(() => {
         const now = new Date();
         now.setHours(now.getHours() + 9);
         const formatted = now.toISOString().slice(0, 16);
-        setSelectedDate(formatted);
+        dispatch({type: 'SET_SELECTED_DATE', payload: formatted});
     }, []);
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDate(e.target.value);
-    };
-
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setSymptomDescription(e.target.value);
+        dispatch({type: 'SET_SELECTED_DATE', payload: e.target.value});
     };
 
     const handleDetailAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setDetailAddress(e.target.value);
+        dispatch({type: 'SET_DETAIL_ADDRESS', payload: e.target.value});
     };
     const handleSearchAddress = async () => {
         await loadPostcodeScript();
@@ -107,14 +149,22 @@ const App = () => {
         new (window as any).daum.Postcode({
             oncomplete: function (data: any) {
                 const fullAddress = data.address;
-                setAddress(fullAddress);
+                const zoneCode = data.zonecode;
+                dispatch({type: 'SET_ADDRESS', payload: fullAddress + '(' + zoneCode + ')'});
                 setIsSelectedAddress(true);
             },
         }).open();
     };
 
     const isFormValid = () => {
-        return selectedMachines.length > 0 && symptomDescription && selectedDate;
+        return (
+            state.modelName.length > 0 &&
+            state.selectedMachines.length > 0 &&
+            state.symptomDescription.trim() &&
+            state.selectedDate.trim() &&
+            state.address.trim() && state.detailAddress.trim() &&
+            state.detailAddress.trim()
+        );
     };
 
     const goDetail = () => {
@@ -132,10 +182,10 @@ const App = () => {
         {text: '로그아웃', link: ''} // 로그아웃은 따로 처리
     ];
     const orderList = [{
-        machineName:'데커 컨벡션 오븐 DKO-8B',
-        orderDate:'2025-04-01',
-        orderStatus:'진행중',
-        orderReason:'온도 조절 문제로 인한 수리 접수'
+        machineName: '데커 컨벡션 오븐 DKO-8B',
+        orderDate: '2025-04-01',
+        orderStatus: '진행중',
+        orderReason: '온도 조절 문제로 인한 수리 접수'
     }];
     // 베이커리 제품 데이터
     const bakeryProducts = [
@@ -207,16 +257,25 @@ const App = () => {
     }
 
     const submitOrder = () => {
+        console.log('----', state);
+
+        console.log('Selected Machines:', state.selectedMachines);
+        console.log('Model Name:', state.modelName);
+        console.log('images', images);
+        console.log('Selected Date:', state.selectedDate);
+        console.log('Phone Number:', state.phoneNumber);
+        console.log('Address:', state.address + ' ' + state.detailAddress);
+        console.log('Symptom Description:', state.symptomDescription);
         // 접수하기 버튼
         /*
         const { data, error } = await supabase
           .from('repair_requests')
           .insert({
             machine_type: selectedMachines, // json 필드
-            model_name : '',
-            photos : '',
+            model_name : modelName,
+            photos : images,
             visit_dt : selectedDate,
-            phone : '',
+            phone : phoneNumber,
             address : address + '' + detailAddress,
             description : symptomDescription,
           });
@@ -301,6 +360,7 @@ const App = () => {
                                     <Button
                                         className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold shadow-lg !rounded-button"
                                         onClick={() => setActiveTab("repair")}
+
                                     >
                                         <i className="fas fa-tools mr-2"></i>
                                         수리 접수하기
@@ -397,7 +457,7 @@ const App = () => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">기계 종류</label>
                                         <div className="grid grid-cols-3 gap-3">
                                             {machineList.map((type, index) => {
-                                                const isSelected = selectedMachines.includes(type);
+                                                const isSelected = state.selectedMachines.includes(type);
 
                                                 return (
                                                     <div
@@ -417,6 +477,10 @@ const App = () => {
                                             type="text"
                                             placeholder="데커 컨벡션 오븐 DKO-8B"
                                             className="w-full border-gray-300"
+                                            onChange={(e) => dispatch({
+                                                type: 'SET_MODEL_NAME',
+                                                payload: e.target.value
+                                            })}
                                         />
                                     </div>
                                     <div>
@@ -441,7 +505,7 @@ const App = () => {
                                                                     }}
                                                                     className="absolute -top-2 -right-2 bg-white rounded-full border border-gray-300 shadow text-xs w-5 h-5 flex items-center justify-center hover:bg-red-500 hover:text-white transition"
                                                                 >
-                                                                    ×
+                                                                    <i className="fa fa-times" aria-hidden="true"></i>
                                                                 </button>
 
                                                                 {/* 이미지 미리보기 */}
@@ -479,7 +543,7 @@ const App = () => {
                                         <Input
                                             type="datetime-local"
                                             className="w-full"
-                                            value={selectedDate}
+                                            value={state.selectedDate}
                                             onChange={handleDateChange}
                                         />
                                     </div>
@@ -489,13 +553,17 @@ const App = () => {
                                             type="text"
                                             placeholder="01012345678"
                                             className="w-full border-gray-300"
+                                            onChange={(e) => dispatch({
+                                                type: 'SET_PHONE_NUMBER',
+                                                payload: e.target.value
+                                            })}
                                         />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium mb-2">방문 장소</label>
                                         <Input
                                             type="text"
-                                            value={address}
+                                            value={state.address}
                                             readOnly
                                             className="w-full border-gray-300"
                                             placeholder="주소를 검색해주세요"
@@ -504,7 +572,7 @@ const App = () => {
                                         {isSelectedAddress &&
                                             <Input
                                                 type="text"
-                                                value={detailAddress}
+                                                value={state.detailAddress}
                                                 className="w-full border-gray-300 mt-1"
                                                 placeholder="상세 주소를 입력해주세요"
                                                 onChange={handleDetailAddress}
@@ -516,7 +584,10 @@ const App = () => {
                                         <textarea
                                             placeholder="고장 증상을 자세히 설명해 주세요."
                                             className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            onChange={handleDescriptionChange}
+                                            onChange={(e) => dispatch({
+                                                type: 'SET_SYMPTOM_DESCRIPTION',
+                                                payload: e.target.value
+                                            })}
                                         ></textarea>
                                     </div>
 
@@ -629,7 +700,8 @@ const App = () => {
                         )}
                     </div>
                     <DialogPopup isOpen={isDialogOpen} onClose={handleDialogClose}
-                                 onConfirm={() => handleDialogConfirm()}/>
+                                 onSaveAndMove={() => handleDialogConfirm(false)}
+                                 onMove={() => handleDialogConfirm(true)}/>
                 </ScrollArea>
             </main>
 
