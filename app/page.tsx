@@ -11,6 +11,7 @@ import {useRouter} from "next/navigation";
 import {loadPostcodeScript} from "@/util/loadPostcodeScript";
 import Link from "next/link";
 import DialogPopup from "@/components/dialog";
+import {supabase} from "@/lib/supabase";
 
 const App = () => {
     type State = typeof initialState;
@@ -256,7 +257,7 @@ const App = () => {
         router.push('/login')
     }
 
-    const submitOrder = () => {
+    const submitOrder = async () => {
         console.log('----', state);
 
         console.log('Selected Machines:', state.selectedMachines);
@@ -266,22 +267,29 @@ const App = () => {
         console.log('Phone Number:', state.phoneNumber);
         console.log('Address:', state.address + ' ' + state.detailAddress);
         console.log('Symptom Description:', state.symptomDescription);
-        // 접수하기 버튼
-        /*
-        const { data, error } = await supabase
-          .from('repair_requests')
-          .insert({
-            machine_type: selectedMachines, // json 필드
-            model_name : modelName,
-            photos : images,
-            visit_dt : selectedDate,
-            phone : phoneNumber,
-            address : address + '' + detailAddress,
-            description : symptomDescription,
-          });
 
-          -> supabase 도입 예정
-         */
+        // 실제로 Supabase에 저장
+        const {data, error} = await supabase
+            .from('repair_requests')
+            .insert([
+                {
+                    machine_type: state.selectedMachines, // 배열 그대로 저장 (JSON 타입 필드 추천)
+                    model_name: state.modelName,
+                    photos: images, // images가 배열이면 Supabase 필드도 JSON이어야 함
+                    visit_dt: state.selectedDate,
+                    phone: state.phoneNumber,
+                    address: `${state.address} ${state.detailAddress}`,
+                    description: state.symptomDescription,
+                },
+            ]);
+
+        if (error) {
+            console.error('❌ Supabase 저장 실패:', error.message);
+        } else {
+            console.log('✅ 저장 성공:', data);
+            // 저장 후 초기화 하고 싶다면:
+            dispatch({type: 'RESET'});
+        }
     }
 
     return (
