@@ -256,8 +256,11 @@ const App = () => {
         // 2. 리다이렉트
         router.push('/login')
     }
-
     const submitOrder = async () => {
+        const {
+            data: {user},
+        } = await supabase.auth.getUser();
+
         console.log('----', state);
 
         console.log('Selected Machines:', state.selectedMachines);
@@ -267,10 +270,11 @@ const App = () => {
         console.log('Phone Number:', state.phoneNumber);
         console.log('Address:', state.address + ' ' + state.detailAddress);
         console.log('Symptom Description:', state.symptomDescription);
+        console.log('user_id:', user?.id);
 
         // 실제로 Supabase에 저장
         const {data, error} = await supabase
-            .from('repair_requests')
+            .from('order')
             .insert([
                 {
                     machine_type: state.selectedMachines, // 배열 그대로 저장 (JSON 타입 필드 추천)
@@ -280,6 +284,7 @@ const App = () => {
                     phone: state.phoneNumber,
                     address: `${state.address} ${state.detailAddress}`,
                     description: state.symptomDescription,
+                    user_id: user?.id,
                 },
             ]);
 
