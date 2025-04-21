@@ -10,10 +10,14 @@ import {Badge} from "@/components/ui/badge";
 import {useRouter} from "next/navigation";
 import {loadPostcodeScript} from "@/util/loadPostcodeScript";
 import Link from "next/link";
-import DialogPopup from "@/components/dialog";
 import {supabase} from "@/lib/supabase";
+import ChangeTabDialog from "@/components/ChangeTabDialog";
+import LoginRequiredDialog from "@/components/LoginRequiredDialog";
+import {checkIsLoggedIn} from "@/components/checkIsLoggedIn";
 
 const App = () => {
+    const ORDER_STORAGE_KEY = 'order-submit-state'
+
     type State = typeof initialState;
 
     type Action =
@@ -58,18 +62,38 @@ const App = () => {
         }
     };
 
+    const formattedDate = () => {
+        const now = new Date();
+        now.setHours(now.getHours() + 9);
+        return now.toISOString().slice(0, 16);
+    }
+
     const initialState = {
         address: '',
         detailAddress: '',
         modelName: '',
         phoneNumber: '',
-        selectedDate: '',
+        selectedDate: formattedDate(),
         symptomDescription: '',
         selectedMachines: [] as string[],
     };
 
+    const getInitialState = (): State => {
+        if (typeof window === 'undefined') return initialState;
+        const saved = localStorage.getItem(ORDER_STORAGE_KEY);
+        if (saved) {
+            try {
+                return JSON.parse(saved) as State;
+            } catch (e) {
+                console.error('❌ 상태 복원 실패:', e)
+                return initialState;
+            }
+        }
+        return initialState;
+    }
+
     const router = useRouter();
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, getInitialState());
 
     const [activeTab, setActiveTab] = useState("home");
     const [images, setImages] = useState<File[]>([]);
@@ -79,6 +103,9 @@ const App = () => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [pendingTab, setPendingTab] = useState<string>('');
+    const [orderList, setOrderList] = useState<any[]>([]);
+
+    const [showLoginPopup, setShowLoginPopup] = useState(false)
 
     const removeImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index));
@@ -113,6 +140,8 @@ const App = () => {
 
     const handleDialogConfirm = (init: boolean) => {
         if (init) dispatch({type: 'RESET'});
+        else localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(state));
+
         setActiveTab(pendingTab);
         handleDialogClose();
     };
@@ -129,13 +158,6 @@ const App = () => {
     const toggleMachine = (type: string) => {
         dispatch({type: 'TOGGLE_MACHINE', payload: type});
     };
-
-    useEffect(() => {
-        const now = new Date();
-        now.setHours(now.getHours() + 9);
-        const formatted = now.toISOString().slice(0, 16);
-        dispatch({type: 'SET_SELECTED_DATE', payload: formatted});
-    }, []);
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch({type: 'SET_SELECTED_DATE', payload: e.target.value});
@@ -162,8 +184,8 @@ const App = () => {
             state.modelName.length > 0 &&
             state.selectedMachines.length > 0 &&
             state.symptomDescription.trim() &&
-            state.selectedDate.trim() &&
-            state.address.trim() && state.detailAddress.trim() &&
+            state.phoneNumber.trim() &&
+            state.address.trim() &&
             state.detailAddress.trim()
         );
     };
@@ -182,12 +204,12 @@ const App = () => {
         {text: '이용약관', link: '/terms'},
         {text: '로그아웃', link: ''} // 로그아웃은 따로 처리
     ];
-    const orderList = [{
-        machineName: '데커 컨벡션 오븐 DKO-8B',
-        orderDate: '2025-04-01',
-        orderStatus: '진행중',
-        orderReason: '온도 조절 문제로 인한 수리 접수'
-    }];
+    // const orderList = [{
+    //     machineName: '데커 컨벡션 오븐 DKO-8B',
+    //     orderDate: '2025-04-01',
+    //     orderStatus: '진행중',
+    //     orderReason: '온도 조절 문제로 인한 수리 접수'
+    // }];
     // 베이커리 제품 데이터
     const bakeryProducts = [
         {
@@ -248,18 +270,30 @@ const App = () => {
         }
     ];
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         //7?ee.9ZpUBkd*NE
         // 1. 토큰 삭제 (쿠키 or localStorage 기반)
         // deleteCookie('accessToken') // 또는 localStorage.removeItem('accessToken') 등
 
         // 2. 리다이렉트
+        await supabase.auth.signOut();
         router.push('/login')
     }
     const submitOrder = async () => {
+
+        const isLogin = await checkIsLoggedIn();
+        console.log('isLogin', isLogin);
+        if (!isLogin) {
+            // ❗로그인 유도 팝업 표시
+            localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(state))
+            return setShowLoginPopup(true);
+        }
+
         const {
             data: {user},
         } = await supabase.auth.getUser();
+
+        console.log('--user--', user);
 
         console.log('----', state);
 
@@ -274,7 +308,7 @@ const App = () => {
 
         // 실제로 Supabase에 저장
         const {data, error} = await supabase
-            .from('order')
+            .from('order-info')
             .insert([
                 {
                     machine_type: state.selectedMachines, // 배열 그대로 저장 (JSON 타입 필드 추천)
@@ -291,11 +325,39 @@ const App = () => {
         if (error) {
             console.error('❌ Supabase 저장 실패:', error.message);
         } else {
-            console.log('✅ 저장 성공:', data);
-            // 저장 후 초기화 하고 싶다면:
+            console.log('✅ 저장 성공:');
+            // 저장 후 초기화
             dispatch({type: 'RESET'});
+            localStorage.removeItem(ORDER_STORAGE_KEY);
+            // 그리고 접수내역으로 이동
+            setActiveTab('history');
         }
     }
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const {data: {user}} = await supabase.auth.getUser();
+            if (!user) return;
+
+            const {data, error} = await supabase
+                .from('order-info')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', {ascending: false});
+
+            if (error) {
+                console.error('❌ 주문 조회 실패', error.message);
+            } else {
+                //setOrders(data || []);
+                console.log('fetchOrders data',data);
+                setOrderList(data || []);
+            }
+            //setLoading(false);
+        }
+        if (activeTab == 'history') {
+            fetchOrders();
+        }
+    }, [activeTab]);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
@@ -490,6 +552,7 @@ const App = () => {
                                             type="text"
                                             placeholder="데커 컨벡션 오븐 DKO-8B"
                                             className="w-full border-gray-300"
+                                            value={state.modelName}
                                             onChange={(e) => dispatch({
                                                 type: 'SET_MODEL_NAME',
                                                 payload: e.target.value
@@ -566,6 +629,7 @@ const App = () => {
                                             type="text"
                                             placeholder="01012345678"
                                             className="w-full border-gray-300"
+                                            value={state.phoneNumber}
                                             onChange={(e) => dispatch({
                                                 type: 'SET_PHONE_NUMBER',
                                                 payload: e.target.value
@@ -582,7 +646,7 @@ const App = () => {
                                             placeholder="주소를 검색해주세요"
                                             onClick={handleSearchAddress}
                                         />
-                                        {isSelectedAddress &&
+                                        {(isSelectedAddress || !!state.detailAddress) &&
                                             <Input
                                                 type="text"
                                                 value={state.detailAddress}
@@ -597,6 +661,7 @@ const App = () => {
                                         <textarea
                                             placeholder="고장 증상을 자세히 설명해 주세요."
                                             className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={state.symptomDescription}
                                             onChange={(e) => dispatch({
                                                 type: 'SET_SYMPTOM_DESCRIPTION',
                                                 payload: e.target.value
@@ -606,7 +671,7 @@ const App = () => {
 
                                     <Button
                                         className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
-                                        disabled={!isFormValid()}
+                                        disabled={!!isFormValid()}
                                         onClick={submitOrder}
                                     > 접수하기
                                     </Button>
@@ -625,7 +690,7 @@ const App = () => {
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div>
                                                         <h4 className="font-bold">{item.machineName}</h4>
-                                                        <p className="text-sm text-gray-600">접수일: {item.orderDate}</p>
+                                                        <p className="text-sm text-gray-600">접수일: {item.created_at}</p>
                                                     </div>
                                                     <Badge variant="outline"
                                                            className="bg-blue-50 text-blue-700 border-blue-200">
@@ -712,9 +777,13 @@ const App = () => {
                             </div>
                         )}
                     </div>
-                    <DialogPopup isOpen={isDialogOpen} onClose={handleDialogClose}
-                                 onSaveAndMove={() => handleDialogConfirm(false)}
-                                 onMove={() => handleDialogConfirm(true)}/>
+                    <ChangeTabDialog isOpen={isDialogOpen} onClose={handleDialogClose}
+                                     onSaveAndMove={() => handleDialogConfirm(false)}
+                                     onMove={() => handleDialogConfirm(true)}/>
+                    <LoginRequiredDialog
+                        isOpen={showLoginPopup}
+                        onClose={() => setShowLoginPopup(false)}
+                    />
                 </ScrollArea>
             </main>
 

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 
-const DialogPopup = ({isOpen, onClose, onSaveAndMove, onMove}) => {
+const ChangeTabDialog = ({isOpen, onClose, onSaveAndMove, onMove}) => {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
@@ -54,4 +54,4 @@ const DialogPopup = ({isOpen, onClose, onSaveAndMove, onMove}) => {
     );
 };
 
-export default DialogPopup;
+export default ChangeTabDialog;
