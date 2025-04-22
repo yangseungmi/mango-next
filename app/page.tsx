@@ -7,13 +7,14 @@ import {Card, CardContent} from "@/components/ui/card";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Badge} from "@/components/ui/badge";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {loadPostcodeScript} from "@/util/loadPostcodeScript";
 import Link from "next/link";
 import {supabase} from "@/lib/supabase";
 import ChangeTabDialog from "@/components/ChangeTabDialog";
 import LoginRequiredDialog from "@/components/LoginRequiredDialog";
 import {checkIsLoggedIn} from "@/components/checkIsLoggedIn";
+import {format} from 'date-fns';
 
 const App = () => {
     const ORDER_STORAGE_KEY = 'order-submit-state'
@@ -105,7 +106,17 @@ const App = () => {
     const [pendingTab, setPendingTab] = useState<string>('');
     const [orderList, setOrderList] = useState<any[]>([]);
 
-    const [showLoginPopup, setShowLoginPopup] = useState(false)
+    const [showLoginPopup, setShowLoginPopup] = useState(false);
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const from = searchParams.get('from');
+        console.log('from',from)
+        if (from === 'detail') {
+            setActiveTab('history');
+        }
+    }, []);
 
     const removeImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index));
@@ -147,12 +158,7 @@ const App = () => {
     };
 
     const changeTab = (tab: string) => {
-        if (activeTab == 'repair' && tab != 'repair') {
-            handleDialogOpen();
-            setPendingTab(tab);
-        } else {
-            setActiveTab(tab);
-        }
+        setActiveTab(tab);
     }
 
     const toggleMachine = (type: string) => {
@@ -319,6 +325,7 @@ const App = () => {
                     address: `${state.address} ${state.detailAddress}`,
                     description: state.symptomDescription,
                     user_id: user?.id,
+                    created_at: format(new Date(), 'yy/MM/dd hh:mm aa')
                 },
             ]);
 
@@ -327,11 +334,15 @@ const App = () => {
         } else {
             console.log('✅ 저장 성공:');
             // 저장 후 초기화
-            dispatch({type: 'RESET'});
+            resetForm();
             localStorage.removeItem(ORDER_STORAGE_KEY);
             // 그리고 접수내역으로 이동
             setActiveTab('history');
         }
+    }
+
+    const resetForm = () => {
+        dispatch({type: 'RESET'});
     }
 
     useEffect(() => {
@@ -349,7 +360,8 @@ const App = () => {
                 console.error('❌ 주문 조회 실패', error.message);
             } else {
                 //setOrders(data || []);
-                console.log('fetchOrders data',data);
+
+                console.log('fetchOrders data', data);
                 setOrderList(data || []);
             }
             //setLoading(false);
@@ -523,7 +535,16 @@ const App = () => {
 
                         {activeTab === "repair" && (
                             <div className="py-2">
-                                <h2 className="text-xl font-bold mb-4">수리 접수하기</h2>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold">수리 접수하기</h2>
+                                    <Button
+                                        variant="outline"
+                                        className="text-xs px-2 py-1 h-auto border-gray-300 hover:bg-gray-100"
+                                        onClick={resetForm}
+                                    ><i className="fa-solid fa-arrows-rotate"></i>
+                                        초기화
+                                    </Button>
+                                </div>
                                 <p className="text-gray-600 mb-6">기계 정보와 고장 내용을 입력해 주세요.</p>
 
                                 {/* 수리 접수 폼 내용 */}
@@ -671,7 +692,7 @@ const App = () => {
 
                                     <Button
                                         className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
-                                        disabled={!!isFormValid()}
+                                        disabled={!isFormValid()}
                                         onClick={submitOrder}
                                     > 접수하기
                                     </Button>
@@ -684,28 +705,37 @@ const App = () => {
                                 <h2 className="text-xl font-bold mb-4">접수 내역</h2>
 
                                 <div className="space-y-4">
-                                    {orderList.map((item, index) => (
-                                        <Card key={index} className="border border-gray-200 shadow-sm">
-                                            <CardContent className="p-4">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <div>
-                                                        <h4 className="font-bold">{item.machineName}</h4>
-                                                        <p className="text-sm text-gray-600">접수일: {item.created_at}</p>
+                                    {orderList.length > 0 ?
+                                        orderList.map((item, index) => (
+                                            <Card key={index} className="border border-gray-200 shadow-sm">
+                                                <CardContent className="p-4">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <h4 className="font-bold">{item.model_name}</h4>
+                                                            <p className="text-sm text-gray-500">접수일: {item.created_at}</p>
+                                                        </div>
+                                                        <Badge variant="outline"
+                                                               className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            {/*{item.orderStatus}*/}
+                                                            접수중
+                                                        </Badge>
                                                     </div>
-                                                    <Badge variant="outline"
-                                                           className="bg-blue-50 text-blue-700 border-blue-200">
-                                                        {item.orderStatus}
-                                                    </Badge>
-                                                </div>
-                                                <p className="text-sm text-gray-700 mb-3">{item.orderReason}</p>
-                                                <Button
-                                                    onClick={goDetail}
-                                                    variant="outline" className="w-full text-sm !rounded-button">
-                                                    상세보기
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                                    <p className="text-sm text-gray-700 mb-3">{item.description}</p>
+                                                    <Button
+                                                        onClick={goDetail}
+                                                        variant="outline" className="w-full text-sm !rounded-button">
+                                                        상세보기
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
+                                        ))
+                                        :
+                                        <div className="border bg-white">
+                                            <p className="text-gray-500 text-sm text-center py-10">
+                                                접수 내역이 없습니다.
+                                            </p>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         )}

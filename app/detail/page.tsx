@@ -7,8 +7,10 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Separator} from "@/components/ui/separator";
 import {Progress} from "@/components/ui/progress";
+import {useRouter} from "next/navigation";
 
 const App = () => {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState("details");
     const [messageText, setMessageText] = useState("");
 
@@ -56,12 +58,16 @@ const App = () => {
         }
     };
 
+    const goHistory = () => {
+        return router.push('/?from=detail');
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
             <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex items-center">
                 <button
-                    onClick={() => window.history.back()}
+                    onClick={() => goHistory()}
                     className="mr-3 cursor-pointer bg-transparent border-none p-0"
                 >
                     <i className="fas fa-arrow-left text-gray-700"></i>
@@ -214,7 +220,7 @@ const App = () => {
                     수리 취소
                 </Button>
                 <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
-                    <i className="fas fa-comment-dots mr-2"></i>
+                    <i className="fa-solid fa-phone"></i>
                     기술자와 전화하기
                 </Button>
             </div>
