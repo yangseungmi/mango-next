@@ -112,7 +112,7 @@ const App = () => {
 
     useEffect(() => {
         const from = searchParams.get('from');
-        console.log('from',from)
+        console.log('from', from)
         if (from === 'detail') {
             setActiveTab('history');
         }
@@ -285,6 +285,34 @@ const App = () => {
         await supabase.auth.signOut();
         router.push('/login')
     }
+
+    const getUploadImageFiles = async (images: File[]): Promise<string[]> => {
+        const urls: string[] = []
+
+        for (const file of images) {
+            const fileName = `${Math.random().toString(36).slice(2)}-${file.name}`
+
+            const {data, error} = await supabase.storage
+                .from('order-image')
+                .upload(fileName, file)
+
+            if (error) {
+                console.error('업로드 실패:', error)
+                throw error
+            }
+
+            const {data: publicUrlData} = supabase
+                .storage
+                .from('order-image')
+                .getPublicUrl(fileName)
+
+            console.log('publicUrlData.publicUrl',publicUrlData.publicUrl)
+            urls.push(publicUrlData.publicUrl)
+        }
+
+        return urls;
+    }
+
     const submitOrder = async () => {
 
         const isLogin = await checkIsLoggedIn();
@@ -311,6 +339,10 @@ const App = () => {
         console.log('Address:', state.address + ' ' + state.detailAddress);
         console.log('Symptom Description:', state.symptomDescription);
         console.log('user_id:', user?.id);
+
+        // image에서 파일 추출 후 supabase에 insert
+        const successUploadImage = getUploadImageFiles(images);
+
 
         // 실제로 Supabase에 저장
         const {data, error} = await supabase
