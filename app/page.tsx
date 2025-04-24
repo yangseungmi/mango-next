@@ -286,28 +286,28 @@ const App = () => {
         router.push('/login')
     }
 
-    const getUploadImageFiles = async (images: File[]): Promise<string[]> => {
+    const getUploadImageFiles = async (images: File[]) => {
         const urls: string[] = []
 
         for (const file of images) {
-            const fileName = `${Math.random().toString(36).slice(2)}-${file.name}`
+            const fileName = `${Math.random().toString(36).slice(2)}`;
 
             const {data, error} = await supabase.storage
                 .from('order-image')
-                .upload(fileName, file)
+                .upload(fileName, file);
 
             if (error) {
-                console.error('업로드 실패:', error)
-                throw error
+                console.log('fileName',fileName)
+                console.error('업로드 실패:', error);
+                throw error;
             }
 
             const {data: publicUrlData} = supabase
                 .storage
                 .from('order-image')
-                .getPublicUrl(fileName)
+                .getPublicUrl(fileName);
 
-            console.log('publicUrlData.publicUrl',publicUrlData.publicUrl)
-            urls.push(publicUrlData.publicUrl)
+            if(publicUrlData) urls.push(fileName);
         }
 
         return urls;
@@ -341,8 +341,7 @@ const App = () => {
         console.log('user_id:', user?.id);
 
         // image에서 파일 추출 후 supabase에 insert
-        const successUploadImage = getUploadImageFiles(images);
-
+        const storageImageFiles = await getUploadImageFiles(images);
 
         // 실제로 Supabase에 저장
         const {data, error} = await supabase
@@ -351,7 +350,7 @@ const App = () => {
                 {
                     machine_type: state.selectedMachines, // 배열 그대로 저장 (JSON 타입 필드 추천)
                     model_name: state.modelName,
-                    photos: images, // images가 배열이면 Supabase 필드도 JSON이어야 함
+                    photos: storageImageFiles, // images가 배열이면 Supabase 필드도 JSON이어야 함
                     visit_dt: state.selectedDate,
                     phone: state.phoneNumber,
                     address: `${state.address} ${state.detailAddress}`,
@@ -369,11 +368,12 @@ const App = () => {
             resetForm();
             localStorage.removeItem(ORDER_STORAGE_KEY);
             // 그리고 접수내역으로 이동
-            setActiveTab('history');
+            return setActiveTab('history');
         }
     }
 
     const resetForm = () => {
+        setImages([]);
         dispatch({type: 'RESET'});
     }
 
@@ -753,6 +753,7 @@ const App = () => {
                                                         </Badge>
                                                     </div>
                                                     <p className="text-sm text-gray-700 mb-3">{item.description}</p>
+                                                    <p className="text-sm text-gray-700 mb-3">{item.photos}</p>
                                                     <Button
                                                         onClick={goDetail}
                                                         variant="outline" className="w-full text-sm !rounded-button">
