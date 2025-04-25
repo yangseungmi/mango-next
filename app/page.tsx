@@ -18,6 +18,7 @@ import {format} from 'date-fns';
 
 const App = () => {
     const ORDER_STORAGE_KEY = 'order-submit-state'
+    const storage_img_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_IMAGE_URL!
 
     type State = typeof initialState;
 
@@ -753,7 +754,18 @@ const App = () => {
                                                         </Badge>
                                                     </div>
                                                     <p className="text-sm text-gray-700 mb-3">{item.description}</p>
-                                                    <p className="text-sm text-gray-700 mb-3">{item.photos}</p>
+
+                                                    {/* 📸 이미지 배열 출력 */}
+                                                    <div className="flex flex-wrap gap-2 mb-3">
+                                                        {item.photos?.map((photo, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={`${storage_img_url}/${photo.trim()}`}
+                                                                    alt={`uploaded-${idx}`}
+                                                                    className="w-24 h-24 object-cover rounded"
+                                                                />
+                                                            ))}
+                                                    </div>
                                                     <Button
                                                         onClick={goDetail}
                                                         variant="outline" className="w-full text-sm !rounded-button">
