@@ -1,18 +1,24 @@
 'use client'
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent} from "@/components/ui/card";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Separator} from "@/components/ui/separator";
 import {Progress} from "@/components/ui/progress";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 
 const App = () => {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState("details");
     const [messageText, setMessageText] = useState("");
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const id = searchParams.get('id');
+        console.log('id', id);
+    }, []);
 
     // 수리 접수 상세 정보
     const repairDetails = {
