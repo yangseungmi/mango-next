@@ -8,17 +8,14 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Separator} from "@/components/ui/separator";
 import {Progress} from "@/components/ui/progress";
 import {useRouter, useSearchParams} from "next/navigation";
+import {supabase} from "@/lib/supabase";
 
 const App = () => {
     const router = useRouter();
     const [messageText, setMessageText] = useState("");
+    const [createdAt, setCreatedAt] = useState("");
 
     const searchParams = useSearchParams();
-
-    useEffect(() => {
-        const id = searchParams.get('id');
-        console.log('id', id);
-    }, []);
 
     // 수리 접수 상세 정보
     const repairDetails = {
@@ -67,6 +64,32 @@ const App = () => {
     const goHistory = () => {
         return router.push('/?from=detail');
     }
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+
+            const orderId = searchParams.get('id');
+            const {data: {user}} = await supabase.auth.getUser();
+            if (!user) return;
+
+            const {data, error} = await supabase
+                .from('order-info')
+                .select('*')
+                .eq('id', Number(orderId))
+                .eq('user_id', user.id)
+                .order('created_at', {ascending: false});
+
+            if (error) {
+                console.error('❌ 주문 조회 실패', error.message);
+            } else if (!data) {
+                console.error('❌ 주문 조회 실패');
+            } else {
+                console.log('detail data', data[0]);
+                setCreatedAt(data[0].created_at);
+            }
+        }
+        fetchOrders();
+    }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
@@ -128,7 +151,7 @@ const App = () => {
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <p className="text-xs text-gray-500">접수일</p>
-                                        <p className="text-sm font-medium">{repairDetails.receipt.date}</p>
+                                        <p className="text-sm font-medium">{createdAt}</p>
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-500">접수번호</p>

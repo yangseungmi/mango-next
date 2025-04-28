@@ -785,7 +785,7 @@ const App = () => {
                             </div>
                         )}
 
-                        {activeTab === "quote" && (
+                        {activeTab === "invoice" && (
                             <div className="py-2">
                                 <h2 className="text-xl font-bold mb-4">견적 확인</h2>
 
@@ -886,10 +886,10 @@ const App = () => {
                     <span className="text-xs">접수 내역</span>
                 </button>
                 <button
-                    className={`flex flex-col items-center justify-center ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={() => changeTab("quote")}
+                    className={`flex flex-col items-center justify-center ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={() => changeTab("invoice")}
                 >
-                    <i className={`fas fa-file-invoice-dollar ${activeTab === "quote" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <i className={`fas fa-file-invoice-dollar ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">견적</span>
                 </button>
                 <button
