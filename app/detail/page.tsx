@@ -14,8 +14,13 @@ const App = () => {
     const router = useRouter();
     const [messageText, setMessageText] = useState("");
     const [createdAt, setCreatedAt] = useState("");
+    const [modelName, setModelName] = useState("");
+    const [description, setDescription] = useState("");
+    const [photos, setPhotos] = useState<File[]>([]);
 
     const searchParams = useSearchParams();
+
+    const storage_img_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_IMAGE_URL!
 
     // 수리 접수 상세 정보
     const repairDetails = {
@@ -38,9 +43,9 @@ const App = () => {
             ]
         },
         technician: {
-            name: "박수리",
+            name: "배믿음 매니저",
             specialty: "오븐 / 발효기 전문",
-            experience: "8년",
+            experience: "10년",
             image: "https://public.readdy.ai/ai/img_res/a20ed9d1a59a883d5f8d0ae951405b8b.jpg"
         },
         estimate: {
@@ -85,7 +90,11 @@ const App = () => {
                 console.error('❌ 주문 조회 실패');
             } else {
                 console.log('detail data', data[0]);
-                setCreatedAt(data[0].created_at);
+                const order  = data[0];
+                setCreatedAt(order.created_at);
+                setModelName(order.model_name);
+                setDescription(order.description);
+                setPhotos(order.photos);
             }
         }
         fetchOrders();
@@ -132,7 +141,7 @@ const App = () => {
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <h2 className="font-bold text-lg text-gray-900">{repairDetails.machine.name}</h2>
+                                        <h2 className="font-bold text-lg text-gray-900">{modelName}</h2>
                                         <div className="gap-3 py-1">
                                             <div>
                                                 <p className="text-xs text-gray-500">시리얼 번호</p>
@@ -161,12 +170,12 @@ const App = () => {
                                 <div className="pt-2">
                                     <p className="text-xs text-gray-500 pb-1">첨부 사진</p>
                                     <div className="grid grid-cols-3 gap-2">
-                                        {repairDetails.issue.photos.map((photo, index) => (
+                                        {photos.map((photo, index) => (
                                             <div key={index}
                                                  className="aspect-square rounded-lg overflow-hidden border border-gray-200">
                                                 <img
-                                                    src={photo}
-                                                    alt={`고장 사진 ${index + 1}`}
+                                                    src={`${storage_img_url}/${photo}`}
+                                                    alt={`첨부 사진 ${index + 1}`}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
@@ -181,7 +190,7 @@ const App = () => {
                             <CardContent className="p-4">
                                 <h3 className="font-bold text-md mb-2">고장 증상</h3>
                                 <p className="text-sm text-gray-700 leading-relaxed">
-                                    {repairDetails.issue.description}
+                                    {description}
                                 </p>
                             </CardContent>
                         </Card>
@@ -200,13 +209,12 @@ const App = () => {
                                     <Separator className="my-2"/>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-bold">총 견적 금액</span>
-                                        <span
-                                            className="text-md font-bold text-blue-600">{repairDetails.estimate.total}</span>
+                                        <span className="text-md font-bold text-blue-600">-</span>
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 p-3 rounded-lg">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-gray-600">방문 예정일</span>
+                                        <span className="text-sm text-gray-600">방문 접수일</span>
                                         <span
                                             className="text-sm font-medium">{repairDetails.estimate.expectedCompletionDate}</span>
                                     </div>

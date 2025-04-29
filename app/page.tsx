@@ -197,8 +197,8 @@ const App = () => {
         );
     };
 
-    const goDetail = () => {
-        return router.push("/detail");
+    const goDetail = (id: number) => {
+        return router.push("/detail?id="+id);
     }
 
     const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
@@ -767,7 +767,7 @@ const App = () => {
                                                             ))}
                                                     </div>
                                                     <Button
-                                                        onClick={goDetail}
+                                                        onClick={()=>goDetail(item.id)}
                                                         variant="outline" className="w-full text-sm !rounded-button">
                                                         상세보기
                                                     </Button>
