@@ -9,6 +9,7 @@ import {Separator} from "@/components/ui/separator";
 import {Progress} from "@/components/ui/progress";
 import {useRouter, useSearchParams} from "next/navigation";
 import {supabase} from "@/lib/supabase";
+import {OrderStatus} from "@/lib/constants";
 
 const App = () => {
     const router = useRouter();
@@ -19,9 +20,9 @@ const App = () => {
     const [photos, setPhotos] = useState<File[]>([]);
 
     const searchParams = useSearchParams();
+    const orderId = searchParams.get('id');
 
     const storage_img_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_IMAGE_URL!
-
     // 수리 접수 상세 정보
     const repairDetails = {
         machine: {
@@ -70,10 +71,31 @@ const App = () => {
         return router.push('/?from=detail');
     }
 
+    const cancelOrder = async () => {
+        // status
+
+        const {data: {user}} = await supabase.auth.getUser();
+        if (!user) return;
+
+        const {data, error} = await supabase
+            .from('order-info')
+            .update({status: OrderStatus.CANCELLED})
+            .eq('id', Number(orderId))
+            .select()
+
+        if (error) {
+            console.error('❌ 주문 조회 실패', error.message);
+        } else if (!data) {
+
+            console.log('취소 data null->', data);
+        }
+        console.log('취소 result- ', data);
+
+    }
+
     useEffect(() => {
         const fetchOrders = async () => {
 
-            const orderId = searchParams.get('id');
             const {data: {user}} = await supabase.auth.getUser();
             if (!user) return;
 
@@ -90,7 +112,7 @@ const App = () => {
                 console.error('❌ 주문 조회 실패');
             } else {
                 console.log('detail data', data[0]);
-                const order  = data[0];
+                const order = data[0];
                 setCreatedAt(order.created_at);
                 setModelName(order.model_name);
                 setDescription(order.description);
@@ -253,7 +275,9 @@ const App = () => {
             {/* 하단 버튼 영역 */}
             <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 p-4 flex space-x-3">
                 <Button variant="outline"
-                        className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 !rounded-button">
+                        className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 !rounded-button"
+                        onClick={cancelOrder}
+                >
                     수리 취소
                 </Button>
                 <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">

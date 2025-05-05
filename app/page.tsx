@@ -15,6 +15,7 @@ import ChangeTabDialog from "@/components/ChangeTabDialog";
 import LoginRequiredDialog from "@/components/LoginRequiredDialog";
 import {checkIsLoggedIn} from "@/components/checkIsLoggedIn";
 import {format} from 'date-fns';
+import {OrderStatus, OrderStatusLabels} from "@/lib/constants";
 
 const App = () => {
     const ORDER_STORAGE_KEY = 'order-submit-state'
@@ -357,6 +358,7 @@ const App = () => {
                     address: `${state.address} ${state.detailAddress}`,
                     description: state.symptomDescription,
                     user_id: user?.id,
+                    status: OrderStatus.RECEIVED,
                     created_at: format(new Date(), 'yy/MM/dd hh:mm aa')
                 },
             ]);
@@ -749,8 +751,7 @@ const App = () => {
                                                         </div>
                                                         <Badge variant="outline"
                                                                className="bg-blue-50 text-blue-700 border-blue-200">
-                                                            {/*{item.orderStatus}*/}
-                                                            접수중
+                                                                {OrderStatusLabels[item.status]}
                                                         </Badge>
                                                     </div>
                                                     <p className="text-sm text-gray-700 mb-3">{item.description}</p>
