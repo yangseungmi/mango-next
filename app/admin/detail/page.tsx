@@ -232,7 +232,7 @@ const App = () => {
                                     <Separator className="my-2"/>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-bold">총 견적 금액</span>
-                                        <span className="text-md font-bold text-blue-600">-</span>
+                                        <span className="text-md font-bold text-blue-600">{/* input 받아 저장할 수 있도록 수정*/}</span>
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 p-3 rounded-lg">
@@ -282,8 +282,7 @@ const App = () => {
                     수리 취소
                 </Button>
                 <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
-                    <i className="fa-solid fa-phone"></i>
-                    기술자와 전화하기
+                    저장하기
                 </Button>
             </div>
         </div>
