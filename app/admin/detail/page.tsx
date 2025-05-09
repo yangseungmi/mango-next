@@ -13,6 +13,14 @@ import {OrderStatus} from "@/lib/constants";
 
 const App = () => {
     // member의 role이 ADMIN인 경우, 이 디테일 페이지에서 접수 관리
+
+    /*
+    1. 조회 페이지 ALL
+    2. 상태 변경
+    3. 견적 수정
+    4. 전화 통화
+    5.
+     */
     const router = useRouter();
     const [messageText, setMessageText] = useState("");
     const [createdAt, setCreatedAt] = useState("");
@@ -100,6 +108,7 @@ const App = () => {
             const {data: {user}} = await supabase.auth.getUser();
             if (!user) return;
 
+            // 어드민인 경우,모든 접수 내역이 다 조회되도록 수정
             const {data, error} = await supabase
                 .from('order-info')
                 .select('*')
@@ -277,9 +286,8 @@ const App = () => {
             <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 p-4 flex space-x-3">
                 <Button variant="outline"
                         className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 !rounded-button"
-                        onClick={cancelOrder}
                 >
-                    수리 취소
+                    전화하기
                 </Button>
                 <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
                     저장하기
