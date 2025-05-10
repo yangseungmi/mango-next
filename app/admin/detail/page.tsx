@@ -1,301 +1,233 @@
-'use client'
+'use client';
 
-import React, {useEffect, useState} from 'react';
-import {Button} from "@/components/ui/button";
-import {Card, CardContent} from "@/components/ui/card";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {Separator} from "@/components/ui/separator";
-import {Progress} from "@/components/ui/progress";
-import {useRouter, useSearchParams} from "next/navigation";
-import {supabase} from "@/lib/supabase";
-import {OrderStatus} from "@/lib/constants";
+import React, { useState } from 'react';
 
-const App = () => {
-    // member의 role이 ADMIN인 경우, 이 디테일 페이지에서 접수 관리
+interface EstimateItem {
+    name: string;
+    price: number;
+}
 
-    /*
-    1. 조회 페이지 ALL
-    2. 상태 변경
-    3. 견적 수정
-    4. 전화 통화
-    5.
-     */
-    const router = useRouter();
-    const [messageText, setMessageText] = useState("");
-    const [createdAt, setCreatedAt] = useState("");
-    const [modelName, setModelName] = useState("");
-    const [description, setDescription] = useState("");
-    const [photos, setPhotos] = useState<File[]>([]);
+const RepairDetail: React.FC = () => {
+    const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([
+        { name: '모터 센서 교체', price: 85000 },
+        { name: '컨트롤러 수리', price: 65000 },
+        { name: '출장비', price: 35000 },
+    ]);
+    const [selectedDate, setSelectedDate] = useState('2025-05-13');
 
-    const searchParams = useSearchParams();
-    const orderId = searchParams.get('id');
+    const total = estimateItems.reduce((sum, item) => sum + item.price, 0);
 
-    const storage_img_url = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_IMAGE_URL!
-    // 수리 접수 상세 정보
-    const repairDetails = {
-        machine: {
-            name: "데커 컨벡션 오븐 DKO-8B",
-            serialNumber: "DKO8B-2023-78945",
-            image: "https://public.readdy.ai/ai/img_res/4a00160f252d7b51cfefe9e0d1f496ef.jpg"
-        },
-        receipt: {
-            date: "2025-04-01",
-            number: "REP-20250401-001",
-            status: "진행중"
-        },
-        issue: {
-            description: "오븐 온도가 설정값보다 20도 이상 높게 올라가는 문제가 있습니다. 온도 조절 노브는 정상적으로 작동하지만 실제 온도가 맞지 않아 제품이 타는 경우가 발생합니다. 또한 타이머 알람이 울리지 않는 문제도 있습니다.",
-            photos: [
-                "https://public.readdy.ai/ai/img_res/e129f8328aa834ce397ae42b7ff42711.jpg",
-                "https://public.readdy.ai/ai/img_res/24271c536393dc4ea953b6c0155d310f.jpg",
-                "https://public.readdy.ai/ai/img_res/e1fea79372905409e85c61cf401346f1.jpg"
-            ]
-        },
-        technician: {
-            name: "배믿음 매니저",
-            specialty: "오븐 / 발효기 전문",
-            experience: "10년",
-            image: "https://public.readdy.ai/ai/img_res/a20ed9d1a59a883d5f8d0ae951405b8b.jpg"
-        },
-        estimate: {
-            total: "185,000원",
-            items: [
-                {name: "온도 센서 교체", price: "85,000원"},
-                {name: "컨트롤러 수리", price: "65,000원"},
-                {name: "출장비", price: "35,000원"}
-            ],
-            expectedCompletionDate: "2025-04-08"
-        },
+    const handleAddItem = () => {
+        setEstimateItems([...estimateItems, { name: '', price: 0 }]);
     };
 
-    const handleSendMessage = () => {
-        if (messageText.trim()) {
-            // 실제 구현에서는 여기에 메시지 전송 로직 추가
-            setMessageText("");
-        }
+    const handleUpdateItem = (index: number, field: keyof EstimateItem, value: string) => {
+        const updated = [...estimateItems];
+        updated[index][field] = field === 'price' ? parseInt(value) || 0 : value;
+        setEstimateItems(updated);
     };
 
-    const goHistory = () => {
-        return router.push('/?from=detail');
-    }
-
-    const cancelOrder = async () => {
-        // status
-
-        const {data: {user}} = await supabase.auth.getUser();
-        if (!user) return;
-
-        const {data, error} = await supabase
-            .from('order-info')
-            .update({status: OrderStatus.CANCELLED})
-            .eq('id', Number(orderId))
-            .select()
-
-        if (error) {
-            console.error('❌ 주문 조회 실패', error.message);
-        } else if (!data) {
-
-            console.log('취소 data null->', data);
-        }
-        console.log('취소 result- ', data);
-
-    }
-
-    useEffect(() => {
-        const fetchOrders = async () => {
-
-            const {data: {user}} = await supabase.auth.getUser();
-            if (!user) return;
-
-            // 어드민인 경우,모든 접수 내역이 다 조회되도록 수정
-            const {data, error} = await supabase
-                .from('order-info')
-                .select('*')
-                .eq('id', Number(orderId))
-                .eq('user_id', user.id)
-                .order('created_at', {ascending: false});
-
-            if (error) {
-                console.error('❌ 주문 조회 실패', error.message);
-            } else if (!data) {
-                console.error('❌ 주문 조회 실패');
-            } else {
-                console.log('detail data', data[0]);
-                const order = data[0];
-                setCreatedAt(order.created_at);
-                setModelName(order.model_name);
-                setDescription(order.description);
-                setPhotos(order.photos);
-            }
-        }
-        fetchOrders();
-    }, []);
+    const handleRemoveItem = (index: number) => {
+        const updated = [...estimateItems];
+        updated.splice(index, 1);
+        setEstimateItems(updated);
+    };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
-            {/* 헤더 */}
-            <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex items-center">
-                <button
-                    onClick={() => goHistory()}
-                    className="mr-3 cursor-pointer bg-transparent border-none p-0"
-                >
-                    <i className="fas fa-arrow-left text-gray-700"></i>
-                </button>
-                <h1 className="text-lg font-bold">수리 접수 상세</h1>
-
+        <div className="bg-gray-50 min-h-screen pb-28">
+            {/* Header */}
+            <header className="fixed top-0 left-0 w-full bg-blue-600 text-white shadow-sm z-10">
+                <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center">
+                        <button className="w-8 h-8 flex items-center justify-center mr-3 cursor-pointer text-white">
+                            <i className="ri-arrow-left-s-line ri-lg"></i>
+                        </button>
+                        <h1 className="text-lg font-medium">수리 접수 상세 관리</h1>
+                    </div>
+                    <button className="text-sm bg-blue-700 bg-opacity-20 px-3 py-1 rounded-full">
+                        접수 #20250510-003
+                    </button>
+                </div>
             </header>
 
-            {/* 메인 콘텐츠 */}
-            <main className="flex-1 pt-[72px] pb-16">
-                <ScrollArea className="h-[calc(100vh-136px)]">
-                    <div className="px-4 py-3">
-                        {/* 기계 정보 카드 */}
-                        <Card className="mb-4 border border-gray-200 shadow-sm overflow-hidden py-0">
-                            <CardContent className="p-4">
-                                <div className="p-2 mb-2">
-                                    <div className="flex justify-between text-xs text-gray-500 mb-2">
-                                        <span>접수</span>
-                                        <span>전화 예정</span>
-                                        <span>방문 확정</span>
-                                        <span>수리 완료</span>
-                                    </div>
-                                    <Progress value={31} className="h-2"/>
-                                </div>
-
-                                <div className="flex items-center">
-                                    <div
-                                        className="w-[80px] h-[80px] rounded-lg overflow-hidden mr-4 bg-white flex items-center justify-center">
-                                        <img
-                                            src={repairDetails.machine.image}
-                                            alt={repairDetails.machine.name}
-                                            className="w-full h-full object-contain"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h2 className="font-bold text-lg text-gray-900">{modelName}</h2>
-                                        <div className="gap-3 py-1">
-                                            <div>
-                                                <p className="text-xs text-gray-500">시리얼 번호</p>
-                                                <p className="text-sm text-gray-700">{repairDetails.machine.serialNumber}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* 접수 정보 카드 */}
-                        <Card className="mb-4 border border-gray-200 shadow-sm py-0">
-                            <CardContent className="p-4">
-                                <h3 className="font-bold text-md mb-3">접수 정보</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <p className="text-xs text-gray-500">접수일</p>
-                                        <p className="text-sm font-medium">{createdAt}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500">접수번호</p>
-                                        <p className="text-sm font-medium">{repairDetails.receipt.number}</p>
-                                    </div>
-                                </div>
-                                <div className="pt-2">
-                                    <p className="text-xs text-gray-500 pb-1">첨부 사진</p>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {photos.map((photo, index) => (
-                                            <div key={index}
-                                                 className="aspect-square rounded-lg overflow-hidden border border-gray-200">
-                                                <img
-                                                    src={`${storage_img_url}/${photo}`}
-                                                    alt={`첨부 사진 ${index + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* 고장 증상 */}
-                        <Card className="mb-4 border border-gray-200 shadow-sm py-0">
-                            <CardContent className="p-4">
-                                <h3 className="font-bold text-md mb-2">고장 증상</h3>
-                                <p className="text-sm text-gray-700 leading-relaxed">
-                                    {description}
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        {/* 견적 정보 */}
-                        <Card className="mb-4 border border-gray-200 shadow-sm py-0">
-                            <CardContent className="p-4">
-                                <h3 className="font-bold text-md mb-3">예상 견적</h3>
-                                <div className="space-y-2 mb-3">
-                                    {repairDetails.estimate.items.map((item, index) => (
-                                        <div key={index} className="flex justify-between items-center">
-                                            <span className="text-sm text-gray-700">{item.name}</span>
-                                            <span className="text-sm font-medium">{item.price}</span>
-                                        </div>
-                                    ))}
-                                    <Separator className="my-2"/>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-bold">총 견적 금액</span>
-                                        <span className="text-md font-bold text-blue-600">{/* input 받아 저장할 수 있도록 수정*/}</span>
-                                    </div>
-                                </div>
-                                <div className="bg-gray-50 p-3 rounded-lg">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm text-gray-600">방문 접수일</span>
-                                        <span
-                                            className="text-sm font-medium">{repairDetails.estimate.expectedCompletionDate}</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* 기술자 정보 */}
-                        <Card className="border border-gray-200 shadow-sm py-0">
-                            <CardContent className="p-4">
-                                <h3 className="font-bold text-md mb-3">담당 기술자</h3>
-                                <div className="flex items-center">
-                                    <Avatar className="h-14 w-14 mr-4">
-                                        <AvatarImage src={repairDetails.technician.image}
-                                                     alt={repairDetails.technician.name}/>
-                                        <AvatarFallback>박</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <div className="flex items-center">
-                                            <h4 className="font-medium text-gray-900 mr-2">{repairDetails.technician.name}</h4>
-                                            <div className="flex items-center">
-                                                {/*<i className="fas fa-star text-yellow-400 text-xs"></i>*/}
-                                                {/*<span className="text-xs ml-1">{repairDetails.technician.rating}</span>*/}
-                                            </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">{repairDetails.technician.specialty}</p>
-                                        <p className="text-xs text-gray-500">경력 {repairDetails.technician.experience}</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+            <main className="pt-16 px-4">
+                {/* 회원 정보 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                            <div className="w-10 h-10 bg-secondary bg-opacity-10 rounded-full flex items-center justify-center mr-3">
+                                <i className="ri-user-line ri-lg text-secondary"></i>
+                            </div>
+                            <div>
+                                <h3 className="font-medium">박지성</h3>
+                                <p className="text-sm text-gray-500">010-9876-5432</p>
+                            </div>
+                        </div>
+                        <button className="w-8 h-8 flex items-center justify-center text-gray-400">
+                            <i className="ri-phone-line ri-lg"></i>
+                        </button>
                     </div>
-                </ScrollArea>
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <p className="text-gray-500">회원등급</p>
+                            <p className="font-medium">VIP</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500">누적 수리</p>
+                            <p className="font-medium">12건</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500">최근 수리</p>
+                            <p className="font-medium">2025.03.15</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 진행 상태 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <div className="flex justify-between mb-2 text-sm">
+                        <span className="font-medium">접수</span>
+                        <span className="text-gray-400">전화 예정</span>
+                        <span className="text-gray-400">방문 확정</span>
+                        <span className="text-gray-400">수리 완료</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-black w-1/4 rounded-full"></div>
+                    </div>
+                </div>
+
+                {/* 기기 정보 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <div className="flex items-center">
+                        <div className="w-20 h-20 mr-4">
+                            <img
+                                src="https://readdy.ai/api/search-image?query=commercial%20oven%2C%20professional%20kitchen%20equipment%2C%20front%20view%2C%20detailed%2C%20realistic%2C%20isolated%20on%20white%20background&width=200&height=200&seq=1&orientation=squarish"
+                                alt="오븐 이미지"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-bold">반죽기-28323</h2>
+                            <p className="text-gray-500 text-sm mt-1">시리얼 번호</p>
+                            <p className="text-sm">DK08B-2023-78945</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 접수 정보 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <h2 className="text-lg font-bold mb-3">접수 정보</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <p className="text-gray-500 text-sm">접수일</p>
+                            <p className="text-sm">2025/05/10 14:30 PM</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500 text-sm">접수번호</p>
+                            <p className="text-sm">REP-20250510-003</p>
+                        </div>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-3">첨부 사진</p>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                        <img
+                            src="https://readdy.ai/api/search-image?query=graph%20chart%20data%20visualization%2C%20technical%20diagnostic%20report%2C%20machine%20performance%20data&width=160&height=120&seq=2&orientation=landscape"
+                            className="w-full h-24 object-cover rounded"
+                            alt="진단 차트"
+                        />
+                        <img
+                            src="https://readdy.ai/api/search-image?query=broken%20commercial%20mixer%2C%20mechanical%20issue%2C%20close-up%20of%20damaged%20part%2C%20technical%20detail&width=160&height=120&seq=3&orientation=landscape"
+                            className="w-full h-24 object-cover rounded"
+                            alt="고장 부위"
+                        />
+                    </div>
+                </div>
+
+                {/* 고장 증상 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <h2 className="text-lg font-bold mb-2">고장 증상</h2>
+                    <p className="text-sm">
+                        기계 작동 시 이상한 소리가 나며, 반죽 속도가 일정하지 않습니다. 또한 전원을 켤 때 가끔 지연이 발생합니다. 지난 주부터 증상이 시작되었습니다.
+                    </p>
+                </div>
+
+                {/* 예상 견적 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <div className="flex justify-between items-center mb-3">
+                        <h2 className="text-lg font-bold">예상 견적</h2>
+                        <button className="text-sm text-secondary" onClick={handleAddItem}>
+                            <i className="ri-add-line ri-lg"></i> 항목 추가
+                        </button>
+                    </div>
+                    <div className="border-b pb-2 mb-2">
+                        {estimateItems.map((item, idx) => (
+                            <div className="flex items-center gap-2 mb-2" key={idx}>
+                                <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => handleUpdateItem(idx, 'name', e.target.value)}
+                                    className="flex-1 border-none bg-gray-50 rounded p-2 text-sm"
+                                />
+                                <div className="relative w-32">
+                                    <input
+                                        type="number"
+                                        value={item.price}
+                                        onChange={(e) => handleUpdateItem(idx, 'price', e.target.value)}
+                                        className="w-full border-none bg-gray-50 rounded p-2 text-sm text-right pr-8"
+                                    />
+                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+                                </div>
+                                <button onClick={() => handleRemoveItem(idx)} className="text-gray-400 hover:text-red-500">
+                                    <i className="ri-delete-bin-line ri-lg"></i>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between items-center bg-gray-50 p-3 rounded">
+                        <span className="font-bold">총 견적 금액</span>
+                        <span className="font-bold text-lg text-secondary">{total.toLocaleString()}원</span>
+                    </div>
+                </div>
+
+                {/* 방문일 */}
+                <div className="mt-4 bg-white rounded p-4 shadow-sm">
+                    <p className="text-gray-500 text-sm">방문 접수일</p>
+                    <div className="flex justify-between items-center mt-1">
+                        <p>{selectedDate}</p>
+                        <button className="text-secondary text-sm cursor-pointer">변경</button>
+                    </div>
+                </div>
+
+                {/* 기술자 정보 */}
+                <div className="bg-white rounded p-4 mt-3 shadow-sm">
+                    <h2 className="text-lg font-bold mb-3">담당 기술자</h2>
+                    <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden mr-3">
+                            <img
+                                src="https://readdy.ai/api/search-image?query=professional%20repairman%20icon%2C%20abstract%2C%20no%20face%2C%20simple%20silhouette&width=100&height=100&seq=4&orientation=squarish"
+                                className="w-full h-full object-cover"
+                                alt="기술자"
+                            />
+                        </div>
+                        <div>
+                            <p className="font-medium">김기술</p>
+                            <p className="text-sm text-gray-500">경력 8년 / 주방기기 전문</p>
+                        </div>
+                    </div>
+                </div>
             </main>
 
-            {/* 하단 버튼 영역 */}
-            <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 p-4 flex space-x-3">
-                <Button variant="outline"
-                        className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 !rounded-button"
-                >
-                    전화하기
-                </Button>
-                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
-                    저장하기
-                </Button>
+            {/* 하단 버튼 */}
+            <div className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex gap-3">
+                <button className="flex-1 py-3 bg-red-500 text-white rounded-button font-medium flex items-center justify-center">
+                    <i className="ri-phone-line ri-lg mr-1"></i>
+                    고객에게 전화
+                </button>
+                <button className="flex-1 py-3 bg-blue-600 text-white rounded-button font-medium">
+                    견적서 저장
+                </button>
             </div>
         </div>
     );
 };
 
-export default App;
-
+export default RepairDetail;
