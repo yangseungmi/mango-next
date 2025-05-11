@@ -199,6 +199,7 @@ const App = () => {
     };
 
     const goDetail = (id: number) => {
+        // 만약 어드민 계정이면 /admin/detail 로 이동
         return router.push("/detail?id="+id);
     }
 
