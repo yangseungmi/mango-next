@@ -198,9 +198,19 @@ const App = () => {
         );
     };
 
-    const goDetail = (id: number) => {
+    const goDetail = async (id: number) => {
         // 만약 어드민 계정이면 /admin/detail 로 이동
-        return router.push("/detail?id="+id);
+
+        const {
+            data: {user},
+        } = await supabase.auth.getUser();
+        const role = user?.role;
+        if (role == 'ADMIN') {
+            return router.push("/admin/detail?id=" + id);
+        }
+        else {
+            return router.push("/detail?id=" + id);
+        }
     }
 
     const machineList = ["오븐", "믹서", "발효기", "반죽기", "냉장고", "기타"];
