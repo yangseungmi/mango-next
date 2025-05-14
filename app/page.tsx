@@ -111,6 +111,7 @@ const App = () => {
     const [showLoginPopup, setShowLoginPopup] = useState(false);
 
     const searchParams = useSearchParams();
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
         const from = searchParams.get('from');
@@ -118,6 +119,15 @@ const App = () => {
         if (from === 'detail') {
             setActiveTab('history');
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const {data, error} = await supabase.auth.getUser();
+            if (!data) console.log('data 없음');
+            else setUser(data.user);
+        };
+        fetchUser();
     }, []);
 
     const removeImage = (index: number) => {
@@ -199,16 +209,10 @@ const App = () => {
     };
 
     const goDetail = async (id: number) => {
-        // 만약 어드민 계정이면 /admin/detail 로 이동
-
-        const {
-            data: {user},
-        } = await supabase.auth.getUser();
         const role = user?.role;
         if (role == 'ADMIN') {
             return router.push("/admin/detail?id=" + id);
-        }
-        else {
+        } else {
             return router.push("/detail?id=" + id);
         }
     }
@@ -310,7 +314,7 @@ const App = () => {
                 .upload(fileName, file);
 
             if (error) {
-                console.log('fileName',fileName)
+                console.log('fileName', fileName)
                 console.error('업로드 실패:', error);
                 throw error;
             }
@@ -320,7 +324,7 @@ const App = () => {
                 .from('order-image')
                 .getPublicUrl(fileName);
 
-            if(publicUrlData) urls.push(fileName);
+            if (publicUrlData) urls.push(fileName);
         }
 
         return urls;
@@ -335,10 +339,6 @@ const App = () => {
             localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(state))
             return setShowLoginPopup(true);
         }
-
-        const {
-            data: {user},
-        } = await supabase.auth.getUser();
 
         console.log('--user--', user);
 
@@ -393,8 +393,6 @@ const App = () => {
 
     useEffect(() => {
         const fetchOrders = async () => {
-            const {data: {user}} = await supabase.auth.getUser();
-            if (!user) return;
 
             const {data, error} = await supabase
                 .from('order-info')
@@ -412,7 +410,7 @@ const App = () => {
             }
             //setLoading(false);
         }
-        if (activeTab == 'history') {
+        if (user != null && activeTab == 'history') {
             fetchOrders();
         }
     }, [activeTab]);
@@ -762,7 +760,7 @@ const App = () => {
                                                         </div>
                                                         <Badge variant="outline"
                                                                className="bg-blue-50 text-blue-700 border-blue-200">
-                                                                {OrderStatusLabels[item.status]}
+                                                            {OrderStatusLabels[item.status]}
                                                         </Badge>
                                                     </div>
                                                     <p className="text-sm text-gray-700 mb-3">{item.description}</p>
@@ -770,16 +768,16 @@ const App = () => {
                                                     {/* 📸 이미지 배열 출력 */}
                                                     <div className="flex flex-wrap gap-2 mb-3">
                                                         {item.photos?.map((photo, idx) => (
-                                                                <img
-                                                                    key={idx}
-                                                                    src={`${storage_img_url}/${photo.trim()}`}
-                                                                    alt={`uploaded-${idx}`}
-                                                                    className="w-24 h-24 object-cover rounded"
-                                                                />
-                                                            ))}
+                                                            <img
+                                                                key={idx}
+                                                                src={`${storage_img_url}/${photo.trim()}`}
+                                                                alt={`uploaded-${idx}`}
+                                                                className="w-24 h-24 object-cover rounded"
+                                                            />
+                                                        ))}
                                                     </div>
                                                     <Button
-                                                        onClick={()=>goDetail(item.id)}
+                                                        onClick={() => goDetail(item.id)}
                                                         variant="outline" className="w-full text-sm !rounded-button">
                                                         상세보기
                                                     </Button>
