@@ -1,13 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import {supabase} from "@/lib/supabase";
 
 interface EstimateItem {
     name: string;
     price: number;
 }
 
-const RepairDetail: React.FC = () => {
+const RepairDetail = () => {
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const {data, error} = await supabase.auth.getUser();
+            if (!data) console.log('data 없음');
+            else setUser(data.user);
+        };
+        fetchUser();
+    }, []);
+
     const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([
         { name: '모터 센서 교체', price: 85000 },
         { name: '컨트롤러 수리', price: 65000 },

@@ -225,7 +225,7 @@ const App = () => {
         {text: '자주 묻는 질문', link: '/faq'},
         {text: '고객센터', link: '/support'},
         {text: '이용약관', link: '/terms'},
-        {text: '로그아웃', link: ''} // 로그아웃은 따로 처리
+        {text: '로그아웃', link: ''}
     ];
     // const orderList = [{
     //     machineName: '데커 컨벡션 오븐 DKO-8B',
