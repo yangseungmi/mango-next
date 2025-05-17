@@ -16,6 +16,7 @@ import LoginRequiredDialog from "@/components/LoginRequiredDialog";
 import {checkIsLoggedIn} from "@/components/checkIsLoggedIn";
 import {format} from 'date-fns';
 import {OrderStatus, OrderStatusLabels} from "@/lib/constants";
+import {useAuth} from '@/context/AuthContext';
 
 const App = () => {
     const ORDER_STORAGE_KEY = 'order-submit-state'
@@ -111,7 +112,8 @@ const App = () => {
     const [showLoginPopup, setShowLoginPopup] = useState(false);
 
     const searchParams = useSearchParams();
-    const [user, setUser] = useState<any>(null);
+    // const [user, setUser] = useState<any>(null);
+    const {user, isLoading} = useAuth();
 
     useEffect(() => {
         const from = searchParams.get('from');
@@ -119,15 +121,6 @@ const App = () => {
         if (from === 'detail') {
             setActiveTab('history');
         }
-    }, []);
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            const {data, error} = await supabase.auth.getUser();
-            if (!data) console.log('data 없음');
-            else setUser(data.user);
-        };
-        fetchUser();
     }, []);
 
     const removeImage = (index: number) => {
@@ -210,6 +203,8 @@ const App = () => {
 
     const goDetail = async (id: number) => {
         const role = user?.role;
+        console.log('user', user);
+        console.log('role', role);
         if (role == 'ADMIN') {
             return router.push("/admin/detail?id=" + id);
         } else {
@@ -225,14 +220,15 @@ const App = () => {
         {text: '자주 묻는 질문', link: '/faq'},
         {text: '고객센터', link: '/support'},
         {text: '이용약관', link: '/terms'},
-        {text: '로그아웃', link: ''}
     ];
+
     // const orderList = [{
     //     machineName: '데커 컨벡션 오븐 DKO-8B',
     //     orderDate: '2025-04-01',
     //     orderStatus: '진행중',
     //     orderReason: '온도 조절 문제로 인한 수리 접수'
     // }];
+
     // 베이커리 제품 데이터
     const bakeryProducts = [
         {
@@ -300,6 +296,9 @@ const App = () => {
 
         // 2. 리다이렉트
         await supabase.auth.signOut();
+        router.push('/login')
+    }
+    const handleLogIn = async () => {
         router.push('/login')
     }
 
@@ -394,21 +393,23 @@ const App = () => {
     useEffect(() => {
         const fetchOrders = async () => {
 
-            const {data, error} = await supabase
-                .from('order-info')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', {ascending: false});
+            if (user) {
+                const {data, error} = await supabase
+                    .from('order-info')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', {ascending: false});
 
-            if (error) {
-                console.error('❌ 주문 조회 실패', error.message);
-            } else {
-                //setOrders(data || []);
+                if (error) {
+                    console.error('❌ 주문 조회 실패', error.message);
+                } else {
+                    //setOrders(data || []);
 
-                console.log('fetchOrders data', data);
-                setOrderList(data || []);
+                    console.log('fetchOrders data', data);
+                    setOrderList(data || []);
+                }
+                //setLoading(false);
             }
-            //setLoading(false);
         }
         if (user != null && activeTab == 'history') {
             fetchOrders();
@@ -858,6 +859,17 @@ const App = () => {
                                             )
                                         ))}
                                     </div>
+                                </div>
+                                <div className="text-sm text-gray-500 text-center">
+                                    {user ? (
+                                        <>
+                                            <span>회원 탈퇴</span>
+                                            |
+                                            <a onClick={handleLogout}>로그아웃</a>
+                                        </>
+                                    ) : (
+                                        <a onClick={handleLogIn}>로그인이 필요합니다</a>
+                                    )}
                                 </div>
                             </div>
                         )}

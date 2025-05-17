@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {supabase} from "@/lib/supabase";
+import {useAuth} from '@/context/AuthContext';
 
 interface EstimateItem {
     name: string;
@@ -9,16 +9,16 @@ interface EstimateItem {
 }
 
 const RepairDetail = () => {
-    const [user, setUser] = useState<any>(null);
+    const {user, isLoading} = useAuth();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const {data, error} = await supabase.auth.getUser();
-            if (!data) console.log('data 없음');
-            else setUser(data.user);
-        };
-        fetchUser();
-    }, []);
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         const {data, error} = await supabase.auth.getUser();
+    //         if (!data) console.log('data 없음');
+    //         else setUser(data.user);
+    //     };
+    //     fetchUser();
+    // }, []);
 
     const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([
         { name: '모터 센서 교체', price: 85000 },
