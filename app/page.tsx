@@ -860,17 +860,35 @@ const App = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="text-sm text-gray-500 text-center">
+                                <div className="text-sm text-gray-500 text-center space-x-2 mt-2">
                                     {user ? (
-                                        <>
-                                            <span>회원 탈퇴</span>
-                                            |
-                                            <a onClick={handleLogout}>로그아웃</a>
-                                        </>
+                                        <div className="flex justify-center items-center gap-2">
+                                            <button
+                                                type="button"
+                                                className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
+                                            >
+                                                회원 탈퇴
+                                            </button>
+                                            <span className="text-gray-400">|</span>
+                                            <button
+                                                type="button"
+                                                className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
+                                                onClick={handleLogout}
+                                            >
+                                                로그아웃
+                                            </button>
+                                        </div>
                                     ) : (
-                                        <a onClick={handleLogIn}>로그인이 필요합니다</a>
+                                        <button
+                                            type="button"
+                                            className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
+                                            onClick={handleLogIn}
+                                        >
+                                            로그인이 필요합니다
+                                        </button>
                                     )}
                                 </div>
+
                             </div>
                         )}
                     </div>

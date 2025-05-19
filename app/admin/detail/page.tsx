@@ -46,9 +46,9 @@ const RepairDetail = () => {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-28">
-            {/* Header */}
-            <header className="fixed top-0 left-0 w-full bg-blue-600 text-white shadow-sm z-10">
+        <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
+            {/* 헤더 */}
+            <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
                 <div className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center">
                         <button className="w-8 h-8 flex items-center justify-center mr-3 cursor-pointer text-white">
@@ -67,7 +67,8 @@ const RepairDetail = () => {
                 <div className="bg-white rounded p-4 mt-3 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center">
-                            <div className="w-10 h-10 bg-secondary bg-opacity-10 rounded-full flex items-center justify-center mr-3">
+                            <div
+                                className="w-10 h-10 bg-secondary bg-opacity-10 rounded-full flex items-center justify-center mr-3">
                                 <i className="ri-user-line ri-lg text-secondary"></i>
                             </div>
                             <div>
@@ -186,9 +187,11 @@ const RepairDetail = () => {
                                         onChange={(e) => handleUpdateItem(idx, 'price', e.target.value)}
                                         className="w-full border-none bg-gray-50 rounded p-2 text-sm text-right pr-8"
                                     />
-                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+                                    <span
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
                                 </div>
-                                <button onClick={() => handleRemoveItem(idx)} className="text-gray-400 hover:text-red-500">
+                                <button onClick={() => handleRemoveItem(idx)}
+                                        className="text-gray-400 hover:text-red-500">
                                     <i className="ri-delete-bin-line ri-lg"></i>
                                 </button>
                             </div>
@@ -230,7 +233,8 @@ const RepairDetail = () => {
 
             {/* 하단 버튼 */}
             <div className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex gap-3">
-                <button className="flex-1 py-3 bg-red-500 text-white rounded-button font-medium flex items-center justify-center">
+                <button
+                    className="flex-1 py-3 bg-red-500 text-white rounded-button font-medium flex items-center justify-center">
                     <i className="ri-phone-line ri-lg mr-1"></i>
                     고객에게 전화
                 </button>
