@@ -866,13 +866,6 @@ const App = () => {
                                             <button
                                                 type="button"
                                                 className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
-                                            >
-                                                회원 탈퇴
-                                            </button>
-                                            <span className="text-gray-400">|</span>
-                                            <button
-                                                type="button"
-                                                className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
                                                 onClick={handleLogout}
                                             >
                                                 로그아웃
