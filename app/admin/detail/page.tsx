@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {useAuth} from '@/context/AuthContext';
+import {Button} from "@/components/ui/button";
 
 interface EstimateItem {
     name: string;
@@ -48,18 +49,13 @@ const RepairDetail = () => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
-            <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
-                <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center">
-                        <button className="w-8 h-8 flex items-center justify-center mr-3 cursor-pointer text-white">
-                            <i className="ri-arrow-left-s-line ri-lg"></i>
-                        </button>
-                        <h1 className="text-lg font-medium">수리 접수 상세 관리</h1>
-                    </div>
-                    <button className="text-sm bg-blue-700 bg-opacity-20 px-3 py-1 rounded-full">
-                        접수 #20250510-003
-                    </button>
-                </div>
+            <header className="fixed top-0 w-[375px] z-10 bg-blue-300 shadow-sm p-4 flex items-center">
+                <button
+                    className="mr-3 cursor-pointer bg-transparent border-none p-0"
+                >
+                    <i className="fas fa-arrow-left text-gray-700"></i>
+                </button>
+                <h1 className="text-lg font-bold">수리 접수 상세</h1>
             </header>
 
             <main className="pt-16 px-4">
@@ -72,7 +68,7 @@ const RepairDetail = () => {
                                 <i className="ri-user-line ri-lg text-secondary"></i>
                             </div>
                             <div>
-                                <h3 className="font-medium">박지성</h3>
+                                <h3 className="font-medium">박단팥</h3>
                                 <p className="text-sm text-gray-500">010-9876-5432</p>
                             </div>
                         </div>
@@ -199,7 +195,7 @@ const RepairDetail = () => {
                     </div>
                     <div className="flex justify-between items-center bg-gray-50 p-3 rounded">
                         <span className="font-bold">총 견적 금액</span>
-                        <span className="font-bold text-lg text-secondary">{total.toLocaleString()}원</span>
+                        <span className="font-bold text-lg">{total.toLocaleString()}원</span>
                     </div>
                 </div>
 
@@ -232,15 +228,16 @@ const RepairDetail = () => {
             </main>
 
             {/* 하단 버튼 */}
-            <div className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex gap-3">
-                <button
-                    className="flex-1 py-3 bg-red-500 text-white rounded-button font-medium flex items-center justify-center">
-                    <i className="ri-phone-line ri-lg mr-1"></i>
+            <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 p-4 flex space-x-3">
+                <Button variant="outline"
+                        className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 !rounded-button"
+                >
                     고객에게 전화
-                </button>
-                <button className="flex-1 py-3 bg-blue-600 text-white rounded-button font-medium">
+                </Button>
+                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
+                    <i className="fa-solid fa-phone"></i>
                     견적서 저장
-                </button>
+                </Button>
             </div>
         </div>
     );

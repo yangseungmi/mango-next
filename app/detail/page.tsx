@@ -133,7 +133,6 @@ const App = () => {
                     <i className="fas fa-arrow-left text-gray-700"></i>
                 </button>
                 <h1 className="text-lg font-bold">수리 접수 상세</h1>
-
             </header>
 
             {/* 메인 콘텐츠 */}
