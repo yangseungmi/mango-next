@@ -3,6 +3,8 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth} from '@/context/AuthContext';
 import {Button} from "@/components/ui/button";
+import {supabase} from "@/lib/supabase";
+import {useSearchParams} from "next/navigation";
 
 interface EstimateItem {
     name: string;
@@ -11,6 +13,8 @@ interface EstimateItem {
 
 const RepairDetail = () => {
     const {user, isLoading} = useAuth();
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get('id');
 
     // useEffect(() => {
     //     const fetchUser = async () => {
@@ -21,14 +25,35 @@ const RepairDetail = () => {
     //     fetchUser();
     // }, []);
 
-    const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([
-        { name: '모터 센서 교체', price: 85000 },
-        { name: '컨트롤러 수리', price: 65000 },
-        { name: '출장비', price: 35000 },
-    ]);
+    const [estimateItems, setEstimateItems] = useState<EstimateItem[]>(null);
+
+    useEffect(() => {
+        const fetchInvoice = async () => {
+
+            console.log('Number(orderId)',Number(orderId));
+
+            const {data, error} = await supabase
+                .from('invoice-info')
+                .select('*')
+                .eq('order_id', Number(orderId))
+                .order('created_at', {ascending: false});
+
+            if (error) {
+                console.error('❌ 주문 조회 실패', error.message);
+            } else if (!data) {
+                console.error('❌ 주문 조회 실패');
+            } else {
+                console.log('data',data);
+                setEstimateItems(data);
+            }
+        }
+        fetchInvoice();
+    }, []);
+
+
     const [selectedDate, setSelectedDate] = useState('2025-05-13');
 
-    const total = estimateItems.reduce((sum, item) => sum + item.price, 0);
+    // const total = estimateItems.reduce((sum, item) => sum + item.price, 0);
 
     const handleAddItem = () => {
         setEstimateItems([...estimateItems, { name: '', price: 0 }]);
@@ -168,7 +193,8 @@ const RepairDetail = () => {
                         </button>
                     </div>
                     <div className="border-b pb-2 mb-2">
-                        {estimateItems.map((item, idx) => (
+                        {!!estimateItems &&
+                            estimateItems.map((item, idx) => (
                             <div className="flex items-center gap-2 mb-2" key={idx}>
                                 <input
                                     type="text"
@@ -191,11 +217,15 @@ const RepairDetail = () => {
                                     <i className="ri-delete-bin-line ri-lg"></i>
                                 </button>
                             </div>
-                        ))}
+                        ))
+                        }
+                        <div>
+                            +
+                        </div>
                     </div>
                     <div className="flex justify-between items-center bg-gray-50 p-3 rounded">
                         <span className="font-bold">총 견적 금액</span>
-                        <span className="font-bold text-lg">{total.toLocaleString()}원</span>
+                        {/*<span className="font-bold text-lg">{total.toLocaleString()}원</span>*/}
                     </div>
                 </div>
 
