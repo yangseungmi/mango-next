@@ -7,6 +7,7 @@ import {supabase} from "@/lib/supabase";
 import {useSearchParams} from "next/navigation";
 
 interface EstimateItem {
+    id: number;
     name: string;
     price: number;
 }
@@ -25,12 +26,12 @@ const RepairDetail = () => {
     //     fetchUser();
     // }, []);
 
-    const [estimateItems, setEstimateItems] = useState<EstimateItem[]>(null);
+    const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([
+        {id: 0, name: '', price: 0},
+    ]);
 
     useEffect(() => {
         const fetchInvoice = async () => {
-
-            console.log('Number(orderId)',Number(orderId));
 
             const {data, error} = await supabase
                 .from('invoice-info')
@@ -43,7 +44,6 @@ const RepairDetail = () => {
             } else if (!data) {
                 console.error('❌ 주문 조회 실패');
             } else {
-                console.log('data',data);
                 setEstimateItems(data);
             }
         }
@@ -53,10 +53,10 @@ const RepairDetail = () => {
 
     const [selectedDate, setSelectedDate] = useState('2025-05-13');
 
-    // const total = estimateItems.reduce((sum, item) => sum + item.price, 0);
+    const total = estimateItems.reduce((sum, item) => sum + item.price, 0);
 
     const handleAddItem = () => {
-        setEstimateItems([...estimateItems, { name: '', price: 0 }]);
+        setEstimateItems([...estimateItems, {id: 0, name: '', price: 0}]);
     };
 
     const handleUpdateItem = (index: number, field: keyof EstimateItem, value: string) => {
@@ -188,44 +188,44 @@ const RepairDetail = () => {
                 <div className="bg-white rounded p-4 mt-3 shadow-sm">
                     <div className="flex justify-between items-center mb-3">
                         <h2 className="text-lg font-bold">예상 견적</h2>
-                        <button className="text-sm text-secondary" onClick={handleAddItem}>
-                            <i className="ri-add-line ri-lg"></i> 항목 추가
-                        </button>
                     </div>
                     <div className="border-b pb-2 mb-2">
                         {!!estimateItems &&
                             estimateItems.map((item, idx) => (
-                            <div className="flex items-center gap-2 mb-2" key={idx}>
-                                <input
-                                    type="text"
-                                    value={item.name}
-                                    onChange={(e) => handleUpdateItem(idx, 'name', e.target.value)}
-                                    className="flex-1 border-none bg-gray-50 rounded p-2 text-sm"
-                                />
-                                <div className="relative w-32">
+                                <div className="flex items-center gap-2 mb-2" key={idx}>
                                     <input
-                                        type="number"
-                                        value={item.price}
-                                        onChange={(e) => handleUpdateItem(idx, 'price', e.target.value)}
-                                        className="w-full border-none bg-gray-50 rounded p-2 text-sm text-right pr-8"
+                                        type="text"
+                                        value={item.name}
+                                        onChange={(e) => handleUpdateItem(idx, 'name', e.target.value)}
+                                        className="flex-1 border-none bg-gray-50 rounded p-2 text-sm"
                                     />
-                                    <span
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+                                    <div className="relative w-32">
+                                        <input
+                                            type="number"
+                                            value={item.price}
+                                            onChange={(e) => handleUpdateItem(idx, 'price', e.target.value)}
+                                            className="w-full border-none bg-gray-50 rounded p-2 text-sm text-right pr-8"
+                                        />
+                                        <span
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+                                    </div>
+                                    <div className="relative w-6">
+                                        <button
+                                            className="text-gray-400 hover:text-red-500"
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button onClick={() => handleRemoveItem(idx)}
-                                        className="text-gray-400 hover:text-red-500">
-                                    <i className="ri-delete-bin-line ri-lg"></i>
-                                </button>
-                            </div>
-                        ))
+                            ))
                         }
-                        <div>
-                            +
+                        <div className="cursor-pointer text-blue-500 text-sm" onClick={handleAddItem}>
+                            + 항목 추가
                         </div>
                     </div>
                     <div className="flex justify-between items-center bg-gray-50 p-3 rounded">
                         <span className="font-bold">총 견적 금액</span>
-                        {/*<span className="font-bold text-lg">{total.toLocaleString()}원</span>*/}
+                        <span className="font-bold text-lg">{total.toLocaleString()}원</span>
                     </div>
                 </div>
 
