@@ -416,6 +416,10 @@ const App = () => {
         }
     }, [activeTab]);
 
+    const goBoard = () => {
+        router.push('/board');
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
@@ -533,7 +537,9 @@ const App = () => {
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-lg font-bold">기계 수리 후기</h3>
                                         <Button variant="ghost"
-                                                className="text-blue-600 text-sm p-0 h-auto cursor-pointer">
+                                                className="text-blue-600 text-sm p-0 h-auto cursor-pointer"
+                                                onClick={goBoard}
+                                        >
                                             더보기 <i className="fas fa-chevron-right ml-1 text-xs"></i>
                                         </Button>
                                     </div>
