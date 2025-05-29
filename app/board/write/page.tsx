@@ -188,13 +188,29 @@ const App: React.FC = () => {
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             <div className="flex flex-col w-[375px] min-h-[762px] bg-gray-50 relative pb-16">
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm fixed top-0 w-full z-10">
-                    <button onClick={() => setCurrentPage('list')} className="cursor-pointer">
-                        <i className="fas fa-arrow-left text-gray-700"></i>
-                    </button>
-                    <h1 className="text-lg font-medium">수리 후기 작성</h1>
-                    <div className="w-6"></div>
-                </div>
+                <header
+                    className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
+                    <div className="flex items-center">
+                        <img
+                            src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
+                            alt="로고"
+                            className="w-8 h-8 mr-2"
+                        />
+                        <h1 className="text-lg font-bold">수리 후기</h1>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <button className="relative cursor-pointer">
+                            <i className="fas fa-bell text-gray-600"></i>
+                            <span
+                                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                        </button>
+                        <Avatar className="cursor-pointer">
+                            <AvatarImage
+                                src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
+                            <AvatarFallback>김</AvatarFallback>
+                        </Avatar>
+                    </div>
+                </header>
                 {/* Main Content */}
                 <div className="mt-[52px] px-4 pb-4">
                     <form onSubmit={handleSubmitReview} className="space-y-6 pt-4">
