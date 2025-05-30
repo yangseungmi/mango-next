@@ -902,7 +902,7 @@ const App = () => {
             </main>
 
             {/* 하단 탭 바 */}
-            <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-5 h-16">
+            <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-6 h-16">
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
                     onClick={() => changeTab("home")}
@@ -930,6 +930,13 @@ const App = () => {
                 >
                     <i className={`fas fa-file-invoice-dollar ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
                     <span className="text-xs">견적</span>
+                </button>
+                <button
+                    className={`flex flex-col items-center justify-center ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                    onClick={goBoard}
+                >
+                    <i className={`fas fa-comment-dots ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                    <span className="text-xs">커뮤니티</span>
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}

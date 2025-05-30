@@ -6,13 +6,12 @@ import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Select} from "@/components/ui/select";
-import {Textarea} from "@/components/ui/textarea";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useRouter} from "next/navigation";
 
 const App: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<'list' | 'write'>('list');
-    const [activeTab, setActiveTab] = useState<string>('history');
+    const [activeTab, setActiveTab] = useState<string>('community');
     const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all');
     const [selectedMachineType, setSelectedMachineType] = useState<string>('all');
     const [sortOrder, setSortOrder] = useState<string>('latest');
@@ -25,10 +24,57 @@ const App: React.FC = () => {
     });
     const handleSubmitReview = (e: React.FormEvent) => {
         e.preventDefault();
-// Here you would typically send the review data to your backend
         console.log('Review submitted:', reviewForm);
         setCurrentPage('list');
     };
+
+    const BottomDiv = () => (
+        <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-6 h-16">
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => changeTab("home")}
+            >
+                <i className={`fas fa-home ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">홈</span>
+            </button>
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => setActiveTab("repair")}
+            >
+                <i className={`fas fa-tools ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">수리 접수</span>
+            </button>
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => changeTab("history")}
+            >
+                <i className={`fas fa-clipboard-list ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">접수 내역</span>
+            </button>
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => changeTab("invoice")}
+            >
+                <i className={`fas fa-file-invoice-dollar ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">견적</span>
+            </button>
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => changeTab("community")}
+            >
+                <i className={`fas fa-comment-dots ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">커뮤니티</span>
+            </button>
+            <button
+                className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
+                onClick={() => changeTab("more")}
+            >
+                <i className={`fas fa-ellipsis-h ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
+                <span className="text-xs">더보기</span>
+            </button>
+        </div>
+    );
+
     const dateFilters = [
         {id: 'month1', label: '1개월'},
         {id: 'month3', label: '3개월'},
@@ -339,45 +385,10 @@ const App: React.FC = () => {
                         </div>
                     )}
                 </div>
-
                 {/* 하단 탭 바 */}
-                <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-5 h-16">
-                    <button
-                        className={`flex flex-col items-center justify-center ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                        onClick={() => changeTab("home")}
-                    >
-                        <i className={`fas fa-home ${activeTab === "home" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                        <span className="text-xs">홈</span>
-                    </button>
-                    <button
-                        className={`flex flex-col items-center justify-center ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                        onClick={() => setActiveTab("repair")}
-                    >
-                        <i className={`fas fa-tools ${activeTab === "repair" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                        <span className="text-xs">수리 접수</span>
-                    </button>
-                    <button
-                        className={`flex flex-col items-center justify-center ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                        onClick={() => changeTab("history")}
-                    >
-                        <i className={`fas fa-clipboard-list ${activeTab === "history" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                        <span className="text-xs">접수 내역</span>
-                    </button>
-                    <button
-                        className={`flex flex-col items-center justify-center ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                        onClick={() => changeTab("invoice")}
-                    >
-                        <i className={`fas fa-file-invoice-dollar ${activeTab === "invoice" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                        <span className="text-xs">견적</span>
-                    </button>
-                    <button
-                        className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                        onClick={() => changeTab("more")}
-                    >
-                        <i className={`fas fa-ellipsis-h ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                        <span className="text-xs">더보기</span>
-                    </button>
-                </div>
+                (
+                    <BottomDiv/>
+                )
             </div>
         </div>
     );
