@@ -386,9 +386,7 @@ const App: React.FC = () => {
                     )}
                 </div>
                 {/* 하단 탭 바 */}
-                (
-                    <BottomDiv/>
-                )
+                <BottomDiv/>
             </div>
         </div>
     );
