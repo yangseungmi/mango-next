@@ -43,11 +43,11 @@ const App: React.FC = () => {
     const changeTab = (tab: string) => {
         setActiveTab(tab);
     }
-    const goBoard = () => {
-        return router.push('/board');
+    const goReview = () => {
+        return router.push('/review');
     }
 
-    const submitBoard = async () => {
+    const submitReview = async () => {
         // supabase 저장
 
         const payload = {
@@ -95,7 +95,7 @@ const App: React.FC = () => {
                 {/* Header */}
                 <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex items-center">
                     <button
-                        onClick={() => goBoard()}
+                        onClick={() => goReview()}
                         className="mr-3 cursor-pointer bg-transparent border-none p-0"
                     >
                         <i className="fas fa-arrow-left text-gray-700"></i>
@@ -165,7 +165,7 @@ const App: React.FC = () => {
                         </div>
                         <Button
                             type="submit"
-                            onClick={submitBoard}
+                            onClick={submitReview}
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4"
                         >
                             후기 등록하기

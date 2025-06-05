@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
@@ -8,6 +8,8 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Select} from "@/components/ui/select";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useRouter} from "next/navigation";
+import {supabase} from "@/lib/supabase";
+import {useAuth} from "@/context/AuthContext";
 
 const App: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<'list' | 'write'>('list');
@@ -16,10 +18,13 @@ const App: React.FC = () => {
     const [selectedMachineType, setSelectedMachineType] = useState<string>('all');
     const [sortOrder, setSortOrder] = useState<string>('latest');
     const router = useRouter();
+    const {user, isLoading} = useAuth();
+    const [repairReviews, setRepairReviews] = useState([]);
     const [reviewForm, setReviewForm] = useState({
         rating: 5,
-        content: '',
-        images: [] as string[],
+        title : '',
+        description: '',
+        photos: [] as string[],
         isPublic: true
     });
     const handleSubmitReview = (e: React.FormEvent) => {
@@ -27,6 +32,32 @@ const App: React.FC = () => {
         console.log('Review submitted:', reviewForm);
         setCurrentPage('list');
     };
+
+    // 페이지 진입시 board 테이블에서 select 해 온 뒤 출력하기
+
+    useEffect(() => {
+        const fetchReview = async () => {
+            if (user) {
+                const {data, error} = await supabase
+                    .from('board-info')
+                    .select('*')
+                    .order('rating', {ascending: false});
+
+                if (error) {
+                    console.error('❌ 후기 조회 실패', error.message);
+                } else {
+                    //setOrders(data || []);
+
+                    console.log('fetchReview data', data);
+                    setRepairReviews(data || []);
+                }
+                //setLoading(false);
+            }
+        }
+        fetchReview();
+        console.log('aa');
+    }, []);
+
 
     const BottomDiv = () => (
         <div className="fixed bottom-0 w-[375px] bg-white border-t border-gray-200 grid grid-cols-6 h-16">
@@ -60,10 +91,10 @@ const App: React.FC = () => {
             </button>
             <button
                 className={`flex flex-col items-center justify-center ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                onClick={() => changeTab("community")}
+                onClick={() => changeTab("review")}
             >
                 <i className={`fas fa-comment-dots ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                <span className="text-xs">커뮤니티</span>
+                <span className="text-xs">후기</span>
             </button>
             <button
                 className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
@@ -89,7 +120,7 @@ const App: React.FC = () => {
         {id: 'kneader', label: '반죽기'},
         {id: 'proofer', label: '발효기'},
     ];
-    const repairReviews = [
+    const repairReviews1 = [
         {
             id: 1,
             machineName: '데커 컨벡션 오븐 DKO-8B',
@@ -242,8 +273,8 @@ const App: React.FC = () => {
         setActiveTab(tab);
     }
 
-    const goBoardWrite = () => {
-        return router.push("/board/write");
+    const goReviewWrite = () => {
+        return router.push("/review/write");
     }
 
     return (
@@ -326,11 +357,11 @@ const App: React.FC = () => {
                     </div>
 
                 </div>
-                <div className="mt-[160px] px-4 pb-4  overflow-x-hidden">
+                <div className="mt-[160px] px-4 pb-4 overflow-x-hidden">
                     <div className="flex justify-between items-center mb-3">
                         <h2 className="text-lg font-medium">전체 후기 ({filteredReviews.length})</h2>
                         <Button
-                            onClick={goBoardWrite}
+                            onClick={goReviewWrite}
                             className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2"
                         >
                             <i className="fas fa-pen mr-2"></i>
@@ -347,15 +378,16 @@ const App: React.FC = () => {
                                         className="cursor-pointer"
                                     >
                                         <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-medium text-gray-800">{review.title}</h3>
                                             <div>
-                                                <h3 className="font-medium text-gray-800">{review.machineName}</h3>
-                                                <p className="text-sm text-gray-600 mt-1">{review.repairDetails}</p>
+                                                {/*<div className="text-sm text-gray-500">{review.created_at}</div>*/}
+                                                <div className="text-sm text-gray-500">2025-06-01</div>
                                             </div>
-                                            <div className="text-sm text-gray-500">{review.date}</div>
                                         </div>
+                                        <div className="text-sm text-gray-600 mt-1">{review.description}</div>
                                     </a>
                                     <div className="flex justify-between items-center">
-                                        <div className="flex text-yellow-400">
+                                    <div className="flex text-yellow-400">
                                             {[...Array(5)].map((_, i) => (
                                                 <i
                                                     key={i}

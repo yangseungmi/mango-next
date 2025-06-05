@@ -416,8 +416,8 @@ const App = () => {
         }
     }, [activeTab]);
 
-    const goBoard = () => {
-        router.push('/board');
+    const goReview = () => {
+        router.push('/review');
     }
 
     return (
@@ -452,7 +452,7 @@ const App = () => {
                         {activeTab === "home" && (
                             <>
                                 <div className="mb-6">
-                                    <h2 className="text-xl font-bold mb-2">안녕하세요, 배밍밍 님!</h2>
+                                    <h2 className="text-xl font-bold mb-2">안녕하세요, 양승미 님!</h2>
                                     <p className="text-gray-600">오늘도 맛있는 빵 만드시느라 고생 많으십니다.</p>
                                 </div>
 
@@ -538,7 +538,7 @@ const App = () => {
                                         <h3 className="text-lg font-bold">기계 수리 후기</h3>
                                         <Button variant="ghost"
                                                 className="text-blue-600 text-sm p-0 h-auto cursor-pointer"
-                                                onClick={goBoard}
+                                                onClick={goReview}
                                         >
                                             더보기 <i className="fas fa-chevron-right ml-1 text-xs"></i>
                                         </Button>
@@ -759,7 +759,7 @@ const App = () => {
                                     {orderList.length > 0 ?
                                         orderList.map((item, index) => (
                                             <Card key={index} className="border border-gray-200 shadow-sm">
-                                                <CardContent className="p-4">
+                                                <CardContent className="px-4 py-1">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
                                                             <h4 className="font-bold">{item.model_name}</h4>
@@ -933,10 +933,10 @@ const App = () => {
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
-                    onClick={goBoard}
+                    onClick={goReview}
                 >
                     <i className={`fas fa-comment-dots ${activeTab === "community" ? "text-blue-600" : "text-gray-500"} text-xl mb-1`}></i>
-                    <span className="text-xs">커뮤니티</span>
+                    <span className="text-xs">후기</span>
                 </button>
                 <button
                     className={`flex flex-col items-center justify-center ${activeTab === "more" ? "text-blue-600" : "text-gray-500"} cursor-pointer`}
