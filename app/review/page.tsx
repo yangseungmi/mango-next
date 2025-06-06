@@ -11,7 +11,7 @@ import {useRouter} from "next/navigation";
 import {supabase} from "@/lib/supabase";
 import {useAuth} from "@/context/AuthContext";
 
-const App: React.FC = () => {
+const App = () => {
     const [currentPage, setCurrentPage] = useState<'list' | 'write'>('list');
     const [activeTab, setActiveTab] = useState<string>('community');
     const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all');
@@ -22,7 +22,7 @@ const App: React.FC = () => {
     const [repairReviews, setRepairReviews] = useState([]);
     const [reviewForm, setReviewForm] = useState({
         rating: 5,
-        title : '',
+        title: '',
         description: '',
         photos: [] as string[],
         isPublic: true
@@ -36,27 +36,25 @@ const App: React.FC = () => {
     // 페이지 진입시 board 테이블에서 select 해 온 뒤 출력하기
 
     useEffect(() => {
+        if (!user) return;
         const fetchReview = async () => {
-            if (user) {
-                const {data, error} = await supabase
-                    .from('board-info')
-                    .select('*')
-                    .order('rating', {ascending: false});
+            console.log('user:', user);
+            const {data, error} = await supabase
+                .from('board-info')
+                .select('*')
+                .order('rating', {ascending: false});
 
-                if (error) {
-                    console.error('❌ 후기 조회 실패', error.message);
-                } else {
-                    //setOrders(data || []);
-
-                    console.log('fetchReview data', data);
-                    setRepairReviews(data || []);
-                }
-                //setLoading(false);
+            if (error) {
+                console.error('❌ 후기 조회 실패', error.message);
+            } else {
+                console.log('fetchReview data', data);
+                setRepairReviews(data || []);
             }
+            //setLoading(false);
         }
         fetchReview();
         console.log('aa');
-    }, []);
+    }, [user]);
 
 
     const BottomDiv = () => (
@@ -277,6 +275,11 @@ const App: React.FC = () => {
         return router.push("/review/write");
     }
 
+    const goReviewDetail = () => {
+        return router.push("/review/write");
+    }
+
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             <div className="flex flex-col w-[375px] min-h-[762px] bg-gray-50 relative pb-16">
@@ -373,9 +376,9 @@ const App: React.FC = () => {
                             {filteredReviews.map(review => (
                                 <Card key={review.id} className="p-4 !rounded-button">
                                     <a
-                                        href="https://readdy.ai/home/d3683d32-6b48-4b2b-87b7-6ddbb63b44c3/d6c07c0c-050b-42a0-ba40-3954c7fb81c6"
                                         data-readdy="true"
                                         className="cursor-pointer"
+                                        onClick={goReviewDetail}
                                     >
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-medium text-gray-800">{review.title}</h3>
@@ -387,7 +390,7 @@ const App: React.FC = () => {
                                         <div className="text-sm text-gray-600 mt-1">{review.description}</div>
                                     </a>
                                     <div className="flex justify-between items-center">
-                                    <div className="flex text-yellow-400">
+                                        <div className="flex text-yellow-400">
                                             {[...Array(5)].map((_, i) => (
                                                 <i
                                                     key={i}
