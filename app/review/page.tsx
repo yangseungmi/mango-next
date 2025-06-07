@@ -10,6 +10,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useRouter} from "next/navigation";
 import {supabase} from "@/lib/supabase";
 import {useAuth} from "@/context/AuthContext";
+import Bottom from "@/app/common/components/Bottom";
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState<'list' | 'write'>('list');
@@ -36,7 +37,6 @@ const App = () => {
     // 페이지 진입시 board 테이블에서 select 해 온 뒤 출력하기
 
     useEffect(() => {
-        if (!user) return;
         const fetchReview = async () => {
             console.log('user:', user);
             const {data, error} = await supabase
@@ -54,7 +54,7 @@ const App = () => {
         }
         fetchReview();
         console.log('aa');
-    }, [user]);
+    }, []);
 
 
     const BottomDiv = () => (
@@ -276,9 +276,8 @@ const App = () => {
     }
 
     const goReviewDetail = () => {
-        return router.push("/review/write");
+        return router.push("/review/detail");
     }
-
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
@@ -421,7 +420,7 @@ const App = () => {
                     )}
                 </div>
                 {/* 하단 탭 바 */}
-                <BottomDiv/>
+                <Bottom activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
         </div>
     );
