@@ -10,12 +10,18 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
 import Bottom from "@/app/common/components/Bottom";
+import {useRouter} from "next/navigation";
 
 const App = () => {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<string>("review");
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
         null,
     );
+
+    const goReview = () => {
+        return router.push('/review');
+    }
 
     const repairDetails = {
         id: 1,
@@ -74,32 +80,19 @@ const App = () => {
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             <div className="flex flex-col w-[375px] min-h-[762px] bg-gray-50 relative pb-16">
                 {/* Header */}
-                <header
-                    className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
-                    <div className="flex items-center">
-                        <img
-                            src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
-                            alt="로고"
-                            className="w-8 h-8 mr-2"
-                        />
-                        <h1 className="text-lg font-bold">수리 후기</h1>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <button className="relative cursor-pointer">
-                            <i className="fas fa-bell text-gray-600"></i>
-                            <span
-                                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
-                        </button>
-                        <Avatar className="cursor-pointer">
-                            <AvatarImage
-                                src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
-                            <AvatarFallback>김</AvatarFallback>
-                        </Avatar>
-                    </div>
+
+                <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex items-center">
+                    <button
+                        onClick={() => goReview()}
+                        className="mr-3 cursor-pointer bg-transparent border-none p-0"
+                    >
+                        <i className="fas fa-arrow-left text-gray-700"></i>
+                    </button>
+                    <h1 className="text-lg font-bold">후기 접수 상세</h1>
                 </header>
 
                 {/* Main Content */}
-                <div className="mt-[52px] px-4 pb-20">
+                <div className="mt-[62px] px-4 pb-20">
                     {/* Machine Info Section */}
                     <Card className="p-4 mt-3 bg-white !rounded-button">
                         <div className="flex justify-between items-start">
@@ -117,7 +110,7 @@ const App = () => {
                             </Badge>
                         </div>
 
-                        <div className="flex items-center mt-3">
+                        <div className="flex items-center mt-2">
                             <div className="flex text-yellow-400 mr-2">
                                 {[...Array(5)].map((_, i) => (
                                     <i
@@ -130,32 +123,12 @@ const App = () => {
               {repairDetails.rating}.0
             </span>
                         </div>
-
-                        <div className="mt-4 flex justify-between items-center">
-                            <div className="flex items-center">
-                                <i className="fas fa-calendar-check text-blue-600 mr-2"></i>
-                                <div>
-                                    <p className="text-xs text-gray-500">수리 완료일</p>
-                                    <p className="text-sm font-medium">
-                                        {repairDetails.completionDate}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center">
-                                <i className="fas fa-coins text-blue-600 mr-2"></i>
-                                <div>
-                                    <p className="text-xs text-gray-500">수리 비용</p>
-                                    <p className="text-sm font-medium">{repairDetails.cost}</p>
-                                </div>
-                            </div>
-                        </div>
                     </Card>
 
                     {/* Repair Details Section */}
                     <Card className="p-4 mt-3 bg-white !rounded-button">
-                        <h3 className="text-lg font-medium text-gray-800 mb-3">수리 내역</h3>
-
-                        <div className="flex items-start mb-4">
+                        <h3 className="text-lg font-medium text-gray-800">수리 내역</h3>
+                        <div className="flex items-start mb-2">
                             <div className="bg-blue-100 rounded-full p-2 mr-3">
                                 <i className="fas fa-tools text-blue-600"></i>
                             </div>
@@ -166,24 +139,6 @@ const App = () => {
                                 </p>
                             </div>
                         </div>
-
-                        <div className="flex items-start mb-4">
-                            <div className="bg-blue-100 rounded-full p-2 mr-3">
-                                <i className="fas fa-receipt text-blue-600"></i>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-800">비용 상세</p>
-                                <div className="grid grid-cols-2 gap-2 mt-1">
-                                    <p className="text-sm text-gray-600">
-                                        부품비: {repairDetails.partsCost}
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        공임비: {repairDetails.laborCost}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="flex items-start">
                             <div className="bg-blue-100 rounded-full p-2 mr-3">
                                 <i className="fas fa-shield-alt text-blue-600"></i>
@@ -340,24 +295,6 @@ const App = () => {
                         </div>
                     </Card>
                 </div>
-
-                {/* Bottom Action Buttons */}
-                <div
-                    className="fixed bottom-[56px] left-0 right-0 bg-white border-t border-gray-200 p-3 grid grid-cols-2 gap-3 z-10">
-                    <Button
-                        variant="outline"
-                        className="border-blue-600 text-blue-600 hover:bg-blue-50 !rounded-button"
-                    >
-                        <i className="fas fa-phone-alt mr-2"></i>
-                        기사에게 문의
-                    </Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white !rounded-button">
-                        <i className="fas fa-clipboard-list mr-2"></i>
-                        다른 후기 보기
-                    </Button>
-                </div>
-                <Bottom activeTab={activeTab} onTabChange={setActiveTab} />
-
             </div>
         </div>
     );

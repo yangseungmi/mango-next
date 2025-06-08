@@ -38,7 +38,6 @@ const App = () => {
 
     useEffect(() => {
         const fetchReview = async () => {
-            console.log('user:', user);
             const {data, error} = await supabase
                 .from('board-info')
                 .select('*')
