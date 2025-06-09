@@ -331,6 +331,7 @@ const App = () => {
 
     const submitOrder = async () => {
 
+        console.log('This is top.');
         const isLogin = await checkIsLoggedIn();
         console.log('isLogin', isLogin);
         if (!isLogin) {
@@ -745,7 +746,7 @@ const App = () => {
                                         className="w-full py-5 text-lg font-medium bg-blue-600 hover:bg-blue-700 shadow-md !rounded-button"
                                         disabled={!isFormValid()}
                                         onClick={submitOrder}
-                                    > 접수하기
+                                    > 접수하기2
                                     </Button>
                                 </div>
                             </div>
