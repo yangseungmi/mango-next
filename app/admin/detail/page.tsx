@@ -38,6 +38,10 @@ const RepairDetail = () => {
         fetchInvoice();
     }, []);
 
+    const [currentStep, setCurrentStep] = useState(0);
+    const steps = ['접수', '전화 예정', '방문 확정', '수리 중', '수리 완료'];
+
+    const progress = (currentStep / (steps.length - 1)) * 100;
     const fetchOrders = async () => {
 
         const {data: {user}} = await supabase.auth.getUser();
@@ -169,9 +173,6 @@ const RepairDetail = () => {
                                             <p className="text-sm text-gray-500">010-9876-5432</p>
                                         </div>
                                     </div>
-                                    <button className="w-8 h-8 flex items-center justify-center text-gray-400">
-                                        <i className="ri-phone-line ri-lg"></i>
-                                    </button>
                                 </div>
                                 <div className="grid grid-cols-3 gap-4 text-sm">
                                     <div>
@@ -192,15 +193,24 @@ const RepairDetail = () => {
 
                         {/* 기계 정보 카드 */}
                         <Card className="mb-4 border border-gray-200 shadow-sm overflow-hidden py-0">
-                            <CardContent className="p-4">
+                            <CardContent className="p-3">
                                 <div className="p-2 mb-2">
-                                    <div className="flex justify-between text-xs text-gray-500 mb-2">
-                                        <span>접수</span>
-                                        <span>전화 예정</span>
-                                        <span>방문 확정</span>
-                                        <span>수리 완료</span>
-                                    </div>
-                                    <Progress value={31} className="h-2"/>
+                                        <div className="flex gap-4 text-xs text-gray-500 mb-2">
+                                            {steps.map((step, index) => (
+                                                <button
+                                                    key={step}
+                                                    onClick={() => setCurrentStep(index)}
+                                                    className={`px-1 py-1 rounded-sm border ${
+                                                        index === currentStep
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'border-gray-300'
+                                                    }`}
+                                                >
+                                                    {step}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    <Progress value={progress} className="h-2"/>
                                 </div>
 
                                 <div className="flex items-center">
@@ -231,12 +241,20 @@ const RepairDetail = () => {
                                 <h3 className="font-bold text-md mb-3">접수 정보</h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
+                                        <p className="text-xs text-gray-500">접수번호</p>
+                                        <p className="text-sm font-medium">{repairDetails.receipt.number}</p>
+                                    </div>
+                                    <div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mt-2">
+                                    <div>
                                         <p className="text-xs text-gray-500">접수일</p>
                                         <p className="text-sm font-medium">{createdAt}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500">접수번호</p>
-                                        <p className="text-sm font-medium">{repairDetails.receipt.number}</p>
+                                        <p className="text-xs text-gray-500">방문일</p>
+                                        <p className="text-sm font-medium">{createdAt}</p>
                                     </div>
                                 </div>
                                 <div className="pt-2">
@@ -302,7 +320,7 @@ const RepairDetail = () => {
                                             </div>
                                         ))
                                     }
-                                    <div className="cursor-pointer text-blue-500 text-sm" onClick={handleAddItem}>
+                                    <div className="text-center cursor-pointer text-blue-500 text-sm" onClick={handleAddItem}>
                                         + 항목 추가
                                     </div>
                                 </div>

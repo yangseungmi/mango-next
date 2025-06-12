@@ -180,12 +180,20 @@ const App = () => {
                                 <h3 className="font-bold text-md mb-3">접수 정보</h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
+                                        <p className="text-xs text-gray-500">접수번호</p>
+                                        <p className="text-sm font-medium">{repairDetails.receipt.number}</p>
+                                    </div>
+                                    <div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mt-2">
+                                    <div>
                                         <p className="text-xs text-gray-500">접수일</p>
                                         <p className="text-sm font-medium">{createdAt}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500">접수번호</p>
-                                        <p className="text-sm font-medium">{repairDetails.receipt.number}</p>
+                                        <p className="text-xs text-gray-500">방문일</p>
+                                        <p className="text-sm font-medium">{createdAt}</p>
                                     </div>
                                 </div>
                                 <div className="pt-2">

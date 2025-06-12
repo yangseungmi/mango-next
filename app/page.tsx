@@ -424,34 +424,29 @@ const App = () => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
             {/* 헤더 */}
-            <header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
-                <div className="flex items-center">
-                    <img
-                        src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
-                        alt="로고"
-                        className="w-8 h-8 mr-2"
-                    />
-                    <h1 className="text-lg font-bold">베이커리 기계 수리</h1>
-                </div>
-                <div className="flex items-center space-x-4">
-                    <button className="relative cursor-pointer">
-                        <i className="fas fa-bell text-gray-600"></i>
-                        <span
-                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
-                    </button>
-                    <Avatar className="cursor-pointer">
-                        <AvatarImage src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
-                        <AvatarFallback>김</AvatarFallback>
-                    </Avatar>
-                </div>
-            </header>
+            {/*<header className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">*/}
+            {/*    <div className="flex items-center">*/}
+            {/*        <h2 className="text-xl font-bold">접수 내역</h2>*/}
+            {/*    </div>*/}
+            {/*    <div className="flex items-center space-x-4">*/}
+            {/*    <button className="relative cursor-pointer">*/}
+            {/*            <i className="fas fa-bell text-gray-600"></i>*/}
+            {/*            <span*/}
+            {/*                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>*/}
+            {/*        </button>*/}
+            {/*        <Avatar className="cursor-pointer">*/}
+            {/*            <AvatarImage src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>*/}
+            {/*            <AvatarFallback>김</AvatarFallback>*/}
+            {/*        </Avatar>*/}
+            {/*    </div>*/}
+            {/*</header>*/}
 
             {/* 메인 콘텐츠 */}
-            <main className="flex-1 pt-[72px] pb-16">
+            <main className="flex-1 pt-[50px] pb-16">
                 <ScrollArea className="h-[calc(100vh-136px)]">
-                    <div className="px-4 py-4">
+                    <div>
                         {activeTab === "home" && (
-                            <>
+                            <div className="px-4 py-4">
                                 <div className="mb-6">
                                     <h2 className="text-xl font-bold mb-2">안녕하세요, 양승미 님!</h2>
                                     <p className="text-gray-600">오늘도 맛있는 빵 만드시느라 고생 많으십니다.</p>
@@ -582,7 +577,7 @@ const App = () => {
                                     </Card>
                                 </div>
 
-                            </>
+                            </div>
                         )}
 
                         {activeTab === "repair" && (
@@ -753,52 +748,71 @@ const App = () => {
                         )}
 
                         {activeTab === "history" && (
-                            <div className="py-2">
-                                <h2 className="text-xl font-bold mb-4">접수 내역</h2>
-
-                                <div className="space-y-4">
-                                    {orderList.length > 0 ?
-                                        orderList.map((item, index) => (
-                                            <Card key={index} className="border border-gray-200 shadow-sm">
-                                                <CardContent className="px-4 py-1">
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <div>
-                                                            <h4 className="font-bold">{item.model_name}</h4>
-                                                            <p className="text-sm text-gray-500">접수일: {item.created_at}</p>
+                            <div>
+                                <header
+                                    className="fixed top-0 w-[375px] z-10 p-4 flex justify-between items-center">
+                                    <div className="flex items-center">
+                                        <h2 className="text-xl font-bold">접수 내역</h2>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <button className="relative cursor-pointer">
+                                            <i className="fas fa-bell text-gray-600"></i>
+                                            <span
+                                                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                                        </button>
+                                        <Avatar className="cursor-pointer">
+                                            <AvatarImage
+                                                src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
+                                            <AvatarFallback>김</AvatarFallback>
+                                        </Avatar>
+                                    </div>
+                                </header>
+                                <div className="px-4 py-4">
+                                    <div className="space-y-4">
+                                        {orderList.length > 0 ?
+                                            orderList.map((item, index) => (
+                                                <Card key={index} className="border border-gray-200 shadow-sm">
+                                                    <CardContent className="px-4 py-1">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <h4 className="font-bold">{item.model_name}</h4>
+                                                                <p className="text-sm text-gray-500">접수일: {item.created_at}</p>
+                                                            </div>
+                                                            <Badge variant="outline"
+                                                                   className="bg-blue-50 text-blue-700 border-blue-200">
+                                                                {OrderStatusLabels[item.status]}
+                                                            </Badge>
                                                         </div>
-                                                        <Badge variant="outline"
-                                                               className="bg-blue-50 text-blue-700 border-blue-200">
-                                                            {OrderStatusLabels[item.status]}
-                                                        </Badge>
-                                                    </div>
-                                                    <p className="text-sm text-gray-700 mb-3">{item.description}</p>
+                                                        <p className="text-sm text-gray-700 mb-3">{item.description}</p>
 
-                                                    {/* 📸 이미지 배열 출력 */}
-                                                    <div className="flex flex-wrap gap-2 mb-3">
-                                                        {item.photos?.map((photo, idx) => (
-                                                            <img
-                                                                key={idx}
-                                                                src={`${storage_img_url}/${photo.trim()}`}
-                                                                alt={`uploaded-${idx}`}
-                                                                className="w-24 h-24 object-cover rounded"
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                    <Button
-                                                        onClick={() => goDetail(item.id)}
-                                                        variant="outline" className="w-full text-sm !rounded-button">
-                                                        상세보기
-                                                    </Button>
-                                                </CardContent>
-                                            </Card>
-                                        ))
-                                        :
-                                        <div className="border bg-white">
-                                            <p className="text-gray-500 text-sm text-center py-10">
-                                                접수 내역이 없습니다.
-                                            </p>
-                                        </div>
-                                    }
+                                                        {/* 📸 이미지 배열 출력 */}
+                                                        <div className="flex flex-wrap gap-2 mb-3">
+                                                            {item.photos?.map((photo, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={`${storage_img_url}/${photo.trim()}`}
+                                                                    alt={`uploaded-${idx}`}
+                                                                    className="w-24 h-24 object-cover rounded"
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        <Button
+                                                            onClick={() => goDetail(item.id)}
+                                                            variant="outline"
+                                                            className="w-full text-sm !rounded-button">
+                                                            상세보기
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+                                            ))
+                                            :
+                                            <div className="border bg-white">
+                                                <p className="text-gray-500 text-sm text-center py-10">
+                                                    접수 내역이 없습니다.
+                                                </p>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         )}
