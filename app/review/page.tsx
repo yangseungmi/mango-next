@@ -250,11 +250,6 @@ const App = () => {
                             <span
                                 className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
                         </button>
-                        <Avatar className="cursor-pointer">
-                            <AvatarImage
-                                src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
-                            <AvatarFallback>김</AvatarFallback>
-                        </Avatar>
                     </div>
                 </header>
                 {/* Filter Section */}

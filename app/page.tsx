@@ -442,7 +442,7 @@ const App = () => {
             {/*</header>*/}
 
             {/* 메인 콘텐츠 */}
-            <main className="flex-1 pt-[50px] pb-16">
+            <main className="flex-1 pt-[60px] pb-16">
                 <ScrollArea className="h-[calc(100vh-136px)]">
                     <div>
                         {activeTab === "home" && (
@@ -760,14 +760,9 @@ const App = () => {
                                             <span
                                                 className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
                                         </button>
-                                        <Avatar className="cursor-pointer">
-                                            <AvatarImage
-                                                src="https://public.readdy.ai/ai/img_res/adddc094417f81d0805c8ab11ce3284c.jpg"/>
-                                            <AvatarFallback>김</AvatarFallback>
-                                        </Avatar>
                                     </div>
                                 </header>
-                                <div className="px-4 py-4">
+                                <div className="px-4 pb-4">
                                     <div className="space-y-4">
                                         {orderList.length > 0 ?
                                             orderList.map((item, index) => (
@@ -854,55 +849,69 @@ const App = () => {
                         )}
 
                         {activeTab === "more" && (
-                            <div className="py-2">
-                                <h2 className="text-xl font-bold mb-4">더보기</h2>
-                                <div
-                                    className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
-                                    <div className="divide-y divide-gray-200">
-                                        {moreList.map((item, index) => (
-                                            item.link ? (
-                                                <Link href={item.link} key={index}>
+                            <div>
+                                <header
+                                    className="fixed top-0 w-[375px] z-10 p-4 flex justify-between items-center">
+                                    <div className="flex items-center">
+                                        <h2 className="text-xl font-bold"></h2>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <button className="relative cursor-pointer">
+                                            <i className="fas fa-bell text-gray-600"></i>
+                                            <span
+                                                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                                        </button>
+                                    </div>
+                                </header>
+
+                                <div className="px-4 pb-4">
+                                    <div
+                                        className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-4">
+                                        <div className="divide-y divide-gray-200">
+                                            {moreList.map((item, index) => (
+                                                item.link ? (
+                                                    <Link href={item.link} key={index}>
+                                                        <div
+                                                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                                                            <span>{item.text}</span>
+                                                            <i className="fas fa-chevron-right text-gray-400"></i>
+                                                        </div>
+                                                    </Link>
+                                                ) : (
                                                     <div
-                                                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50">
+                                                        key={index}
+                                                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                                                        onClick={() => handleLogout()}
+                                                    >
                                                         <span>{item.text}</span>
                                                         <i className="fas fa-chevron-right text-gray-400"></i>
                                                     </div>
-                                                </Link>
-                                            ) : (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-                                                    onClick={() => handleLogout()}
-                                                >
-                                                    <span>{item.text}</span>
-                                                    <i className="fas fa-chevron-right text-gray-400"></i>
-                                                </div>
-                                            )
-                                        ))}
+                                                )
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="text-sm text-gray-500 text-center space-x-2 mt-2">
-                                    {user ? (
-                                        <div className="flex justify-center items-center gap-2">
+                                    <div className="text-sm text-gray-500 text-center space-x-2 mt-2">
+                                        {user ? (
+                                            <div className="flex justify-center items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
+                                                    onClick={handleLogout}
+                                                >
+                                                    로그아웃
+                                                </button>
+                                            </div>
+                                        ) : (
                                             <button
                                                 type="button"
                                                 className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
-                                                onClick={handleLogout}
+                                                onClick={handleLogIn}
                                             >
-                                                로그아웃
+                                                로그인이 필요합니다
                                             </button>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            className="hover:underline hover:text-gray-700 transition-colors cursor-pointer"
-                                            onClick={handleLogIn}
-                                        >
-                                            로그인이 필요합니다
-                                        </button>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
-
                             </div>
                         )}
                     </div>
