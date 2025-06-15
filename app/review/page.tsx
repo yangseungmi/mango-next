@@ -219,7 +219,8 @@ const App = () => {
     });
 
     const changeTab = (tab: string) => {
-        setActiveTab(tab);
+        return router.push("/");
+        // setActiveTab(tab);
     }
 
     const goReviewWrite = () => {
@@ -232,142 +233,145 @@ const App = () => {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 w-[375px] mx-auto relative">
-            <div className="flex flex-col w-[375px] min-h-[762px] bg-gray-50 relative pb-16">
-                {/* Header */}
-                <header
-                    className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
-                    <div className="flex items-center">
-                        <img
-                            src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
-                            alt="로고"
-                            className="w-8 h-8 mr-2"
-                        />
-                        <h1 className="text-lg font-bold">수리 후기</h1>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <button className="relative cursor-pointer">
-                            <i className="fas fa-bell text-gray-600"></i>
-                            <span
-                                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
-                        </button>
-                    </div>
-                </header>
-                {/* Filter Section */}
-                <div className="fixed top-[52px] w-[375px] bg-white shadow-sm px-4 py-3 border-b">
-                    {/* 정렬 셀렉트 (숨김 처리 중) */}
-                    <div className="flex justify-between items-center mb-2">
-                        <Select value={sortOrder} onValueChange={setSortOrder}>
-                            {/* <SelectTrigger /> */}
-                        </Select>
-                    </div>
-
-                    {/* 날짜 필터 */}
-                    <ScrollArea className="w-full overflow-x-auto pb-1">
-                        <div className="flex space-x-2 px-1">
-                            {dateFilters.map((filter) => (
-                                <Button
-                                    key={filter.id}
-                                    // variant={selectedDateFilter === filter.id ? "default" : "outline"}
-                                    size="sm"
-                                    className={`text-xs px-2 h-6 rounded-full transition ${
-                                        selectedDateFilter === filter.id
-                                            ? "bg-blue-600 hover:bg-blue-700 text-white"
-                                            : "bg-white text-gray-800 border border-gray-200 hover:bg-gray-100"
-                                    }`}
-                                    onClick={() => setSelectedDateFilter(filter.id)}
-                                >
-                                    {filter.label}
-                                </Button>
-                            ))}
+            <main className="flex-1  pb-16">
+                <ScrollArea className="h-[calc(100vh-136px)]">
+                    {/* Header */}
+                    <header
+                        className="fixed top-0 w-[375px] z-10 bg-white shadow-sm p-4 flex justify-between items-center">
+                        <div className="flex items-center">
+                            <img
+                                src="https://public.readdy.ai/ai/img_res/cb0d4a879b43da21a4e203bb468a353b.jpg"
+                                alt="로고"
+                                className="w-8 h-8 mr-2"
+                            />
+                            <h1 className="text-lg font-bold">수리 후기</h1>
                         </div>
-                    </ScrollArea>
+                        <div className="flex items-center space-x-4">
+                            <button className="relative cursor-pointer">
+                                <i className="fas fa-bell text-gray-600"></i>
+                                <span
+                                    className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                            </button>
+                        </div>
+                    </header>
+                    {/* Filter Section */}
+                    <div className="fixed top-[52px] w-[375px] bg-white shadow-sm px-4 py-3 border-b">
+                        {/* 정렬 셀렉트 (숨김 처리 중) */}
+                        <div className="flex justify-between items-center mb-2">
+                            <Select value={sortOrder} onValueChange={setSortOrder}>
+                                {/* <SelectTrigger /> */}
+                            </Select>
+                        </div>
 
-                    {/* 기기 필터 */}
-                    <div className="w-full overflow-x-auto mt-1 pb-1">
-                        <div className="overflow-x-auto whitespace-nowrap">
-                            <div className="inline-flex space-x-2 px-1">
-                                {machineTypes.map((type) => (
+                        {/* 날짜 필터 */}
+                        <ScrollArea className="w-full overflow-x-auto pb-1">
+                            <div className="flex space-x-2 px-1">
+                                {dateFilters.map((filter) => (
                                     <Button
-                                        key={type.id}
+                                        key={filter.id}
+                                        // variant={selectedDateFilter === filter.id ? "default" : "outline"}
                                         size="sm"
-                                        className={`text-xs px-2 h-6 rounded-lg ${
-                                            selectedMachineType === type.id
+                                        className={`text-xs px-2 h-6 rounded-full transition ${
+                                            selectedDateFilter === filter.id
                                                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                                                 : "bg-white text-gray-800 border border-gray-200 hover:bg-gray-100"
                                         }`}
-                                        onClick={() => setSelectedMachineType(type.id)}
+                                        onClick={() => setSelectedDateFilter(filter.id)}
                                     >
-                                        {type.label}
+                                        {filter.label}
                                     </Button>
                                 ))}
                             </div>
-                        </div>
-                    </div>
+                        </ScrollArea>
 
-                </div>
-                <div className="mt-[160px] px-4 pb-4 overflow-x-hidden">
-                    <div className="flex justify-between items-center mb-3">
-                        <h2 className="text-lg font-medium">전체 후기 ({filteredReviews.length})</h2>
-                        <Button
-                            onClick={goReviewWrite}
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2"
-                        >
-                            <i className="fas fa-pen mr-2"></i>
-                            후기 작성
-                        </Button>
-                    </div>
-                    {filteredReviews.length > 0 ? (
-                        <div className="space-y-3">
-                            {filteredReviews.map(review => (
-                                <Card key={review.id} className="p-4 !rounded-button">
-                                    <a
-                                        data-readdy="true"
-                                        className="cursor-pointer"
-                                        onClick={goReviewDetail}
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-medium text-gray-800">{review.title}</h3>
-                                            <div>
-                                                {/*<div className="text-sm text-gray-500">{review.created_at}</div>*/}
-                                                <div className="text-sm text-gray-500">2025-06-01</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-sm text-gray-600 mt-1">{review.description}</div>
-                                    </a>
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex text-yellow-400">
-                                            {[...Array(5)].map((_, i) => (
-                                                <i
-                                                    key={i}
-                                                    className={`${i < review.rating ? 'fas' : 'far'} fa-star`}
-                                                ></i>
-                                            ))}
-                                        </div>
-                                        <Badge className="bg-blue-600 hover:bg-blue-700">{review.status}</Badge>
-                                    </div>
-                                </Card>
-                            ))}
+                        {/* 기기 필터 */}
+                        <div className="w-full overflow-x-auto mt-1 pb-1">
+                            <div className="overflow-x-auto whitespace-nowrap">
+                                <div className="inline-flex space-x-2 px-1">
+                                    {machineTypes.map((type) => (
+                                        <Button
+                                            key={type.id}
+                                            size="sm"
+                                            className={`text-xs px-2 h-6 rounded-lg ${
+                                                selectedMachineType === type.id
+                                                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                                    : "bg-white text-gray-800 border border-gray-200 hover:bg-gray-100"
+                                            }`}
+                                            onClick={() => setSelectedMachineType(type.id)}
+                                        >
+                                            {type.label}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-10">
-                            <i className="fas fa-clipboard-list text-gray-300 text-5xl mb-4"></i>
-                            <p className="text-gray-500">선택한 필터에 맞는 후기가 없습니다</p>
+
+                    </div>
+                    <div className="mt-[160px] px-4 pb-4 overflow-x-hidden">
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-lg font-medium">전체 후기 ({filteredReviews.length})</h2>
                             <Button
-                                variant="outline"
-                                className="mt-4 text-blue-600 border-blue-600"
-                                onClick={() => {
-                                    setSelectedDateFilter('all');
-                                    setSelectedMachineType('all');
-                                }}
+                                onClick={goReviewWrite}
+                                className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2"
                             >
-                                필터 초기화
+                                <i className="fas fa-pen mr-2"></i>
+                                후기 작성
                             </Button>
                         </div>
-                    )}
-                </div>
-                {/* 하단 탭 바 */}
-                <Bottom activeTab={activeTab} onTabChange={setActiveTab} />
-            </div>
+                        {filteredReviews.length > 0 ? (
+                            <div className="space-y-3">
+                                {filteredReviews.map(review => (
+                                    <Card key={review.id} className="p-4 !rounded-button">
+                                        <a
+                                            data-readdy="true"
+                                            className="cursor-pointer"
+                                            onClick={goReviewDetail}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="font-medium text-gray-800">{review.title}</h3>
+                                                <div>
+                                                    {/*<div className="text-sm text-gray-500">{review.created_at}</div>*/}
+                                                    <div className="text-sm text-gray-500">2025-06-01</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-sm text-gray-600 mt-1">{review.description}</div>
+                                        </a>
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex text-yellow-400">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <i
+                                                        key={i}
+                                                        className={`${i < review.rating ? 'fas' : 'far'} fa-star`}
+                                                    ></i>
+                                                ))}
+                                            </div>
+                                            <Badge className="bg-blue-600 hover:bg-blue-700">{review.status}</Badge>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-10">
+                                <i className="fas fa-clipboard-list text-gray-300 text-5xl mb-4"></i>
+                                <p className="text-gray-500">선택한 필터에 맞는 후기가 없습니다</p>
+                                <Button
+                                    variant="outline"
+                                    className="mt-4 text-blue-600 border-blue-600"
+                                    onClick={() => {
+                                        setSelectedDateFilter('all');
+                                        setSelectedMachineType('all');
+                                    }}
+                                >
+                                    필터 초기화
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                    {/* 하단 탭 바 */}
+                    <Bottom activeTab={activeTab} onTabChange={changeTab}/>
+
+                </ScrollArea>
+            </main>
         </div>
     );
 };
