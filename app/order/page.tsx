@@ -222,13 +222,6 @@ const App = () => {
         {text: '이용약관', link: '/terms'},
     ];
 
-    // const orderList = [{
-    //     machineName: '데커 컨벡션 오븐 DKO-8B',
-    //     orderDate: '2025-04-01',
-    //     orderStatus: '진행중',
-    //     orderReason: '온도 조절 문제로 인한 수리 접수'
-    // }];
-
     // 베이커리 제품 데이터
     const bakeryProducts = [
         {
